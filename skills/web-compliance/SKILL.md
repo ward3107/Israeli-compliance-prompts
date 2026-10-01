@@ -46,7 +46,7 @@ accessibility statement produced with this skill, have it reviewed by a
 qualified lawyer licensed in the relevant jurisdiction. Use at your own risk;
 no warranty is provided.
 
-Both shipped jurisdiction packs are currently marked `needs_legal_review: true`
+All shipped jurisdiction packs are currently marked `needs_legal_review: true`
 — they have not yet been signed off by a lawyer. Say so if the user seems to be
 relying on them as authoritative.
 

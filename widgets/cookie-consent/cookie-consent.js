@@ -159,13 +159,16 @@
 
   // ---- storage -------------------------------------------------------------
 
-  function readStored() {
+  function readStored(region) {
     try {
       var raw = global.localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
       var data = JSON.parse(raw);
       if (!data || data.version !== VERSION) return null;
-      if (!data.expires || Date.now() > data.expires) return null;
+      if (typeof data.analytics !== 'boolean' || typeof data.marketing !== 'boolean') return null;
+      if (typeof data.expires !== 'number' || !isFinite(data.expires) || Date.now() > data.expires) return null;
+      // A choice made under a different regional model must be collected again.
+      if (data.region !== region) return null;
       return data;
     } catch (e) {
       return null;
@@ -187,7 +190,7 @@
         expires: expires.getTime()
       }));
     } catch (e) {
-      /* storage unavailable (private mode, blocked) — fail open, banner reshows */
+      /* storage unavailable — keep the in-memory choice; ask again on the next visit */
     }
   }
 
@@ -202,6 +205,7 @@
     _lastFocus: null,
 
     init: function (config) {
+      this._destroy();
       var cfg = config || {};
       this._cfg = cfg;
 
@@ -212,11 +216,11 @@
       this._model = OPT_OUT_REGIONS.indexOf(region) !== -1 ? 'opt_out' : 'opt_in';
       this._gpc = global.navigator && global.navigator.globalPrivacyControl === true;
 
-      if (cfg.gtmId) pushConsentDefault();
+      if (cfg.gtmId || global.dataLayer) pushConsentDefault();
 
-      var ukExempt = region === 'uk' && cfg.ukFirstPartyAnalyticsExempt !== false;
+      var ukExempt = region === 'uk' && cfg.ukFirstPartyAnalyticsExempt === true;
 
-      var stored = readStored();
+      var stored = readStored(region);
       if (stored) {
         // Returning visitor with a valid, unexpired choice — apply, no banner.
         this._apply({ analytics: stored.analytics, marketing: stored.marketing }, false);
@@ -232,13 +236,15 @@
       } else {
         // Opt-in: nothing non-essential until the user agrees...
         initial = { analytics: !!ukExempt, marketing: false }; // ...except UK first-party analytics
-        if (ukExempt) this._apply(initial, false);
+        this._apply(initial, false);
       }
 
       this._render(lang, region, ukExempt, initial);
     },
 
     _apply: function (consent, persist) {
+      // Browser privacy signals override any previously saved choice.
+      consent = { analytics: !!consent.analytics, marketing: !!consent.marketing && !this._gpc };
       if (this._cfg.gtmId || global.dataLayer) pushConsentUpdate(consent);
       if (persist) writeStored(consent, this._cfg.region || 'auto', resolveLanguage(this._cfg.language));
       if (typeof this._cfg.onChange === 'function') {
@@ -261,6 +267,7 @@
       var root = document.createElement('div');
       root.className = 'cc-root';
       root.setAttribute('dir', t.dir);
+      root.setAttribute('lang', lang);
       root.setAttribute('role', 'dialog');
       root.setAttribute('aria-modal', 'false');
       root.setAttribute('aria-label', t.title);
@@ -284,7 +291,7 @@
           '</div>' +
           '<div class="cc-actions">' +
             (optOut
-              ? '<button type="button" class="cc-btn cc-btn-primary" data-cc="save">' + esc(t.doNotSell) + '</button>'
+              ? '<button type="button" class="cc-btn cc-btn-primary" data-cc="optout">' + esc(t.doNotSell) + '</button>'
               : '<button type="button" class="cc-btn cc-btn-primary" data-cc="accept">' + esc(t.acceptAll) + '</button>' +
                 '<button type="button" class="cc-btn" data-cc="reject">' + esc(t.rejectAll) + '</button>') +
             '<button type="button" class="cc-btn cc-btn-ghost" data-cc="toggle" aria-expanded="false" aria-controls="cc-panel">' + esc(t.customize) + '</button>' +
@@ -306,6 +313,7 @@
         if (!el) return;
         var action = el.getAttribute('data-cc');
         if (action === 'accept') self._choose({ analytics: true, marketing: !self._gpc });
+        else if (action === 'optout') self._choose({ analytics: !!initial.analytics, marketing: false });
         else if (action === 'reject') self._choose({ analytics: false, marketing: false });
         else if (action === 'toggle') self._togglePanel(el);
         else if (action === 'save') {
@@ -362,10 +370,11 @@
     // Re-open the banner (e.g. from a "Cookie settings" footer link).
     show: function () {
       if (this._root) return;
+      if (!this._cfg) return;
       var lang = resolveLanguage(this._cfg.language);
       var region = (this._cfg.region && this._cfg.region !== 'auto') ? this._cfg.region : 'auto';
-      var ukExempt = region === 'uk' && this._cfg.ukFirstPartyAnalyticsExempt !== false;
-      var stored = readStored() || { analytics: !!ukExempt, marketing: false };
+      var ukExempt = region === 'uk' && this._cfg.ukFirstPartyAnalyticsExempt === true;
+      var stored = readStored(region) || { analytics: !!ukExempt, marketing: false };
       this._render(lang, region, ukExempt, stored);
     }
   };

@@ -26,7 +26,7 @@
     <fieldset>
       <legend>Region</legend>
       <label><input type="radio" name="region" value="eu" checked> EU (opt-in)</label>
-      <label><input type="radio" name="region" value="uk"> UK (opt-in + first-party analytics exemption)</label>
+      <label><input type="radio" name="region" value="uk"> UK (opt-in; optional analytics exemption)</label>
       <label><input type="radio" name="region" value="il"> Israel (opt-in)</label>
       <label><input type="radio" name="region" value="us"> US federal (opt-out)</label>
       <label><input type="radio" name="region" value="us-ca"> California (opt-out + GPC)</label>
@@ -39,6 +39,8 @@
       <label><input type="radio" name="lang" value="ar"> العربية</label>
       <label><input type="radio" name="lang" value="ru"> Русский</label>
     </fieldset>
+
+    <p><label><input type="checkbox" id="uk-exempt"> Enable UK analytics exemption (only after verifying eligibility)</label></p>
 
     <p>
       <button class="demo" id="load">Load banner</button>
@@ -74,6 +76,7 @@
       CookieConsent._root && CookieConsent._destroy();
       CookieConsent.init({
         region: selected('region'),
+        ukFirstPartyAnalyticsExempt: document.getElementById('uk-exempt').checked,
         language: selected('lang'),
         privacyPolicyUrl: '/privacy',
         brandColor: '#2563eb',
