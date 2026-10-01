@@ -24,7 +24,7 @@ two files in.
   the user agrees) vs opt-out (US, California: a "Do Not Sell or Share" control).
 - **UK first-party-analytics exemption** — under the DUAA 2025 (PECR from
   5 Feb 2026), a UK visitor's first-party analytics runs without prior consent;
-  marketing still requires opt-in. Toggle with `ukFirstPartyAnalyticsExempt`.
+  marketing still requires opt-in. Disabled by default; explicitly enable with `ukFirstPartyAnalyticsExempt: true` only after verifying the exemption conditions for your implementation.
 - **Granular categories** — Necessary (locked on), Analytics, Marketing, each
   with a plain-language description.
 - **4 languages + RTL** — English, Hebrew, Arabic, Russian, auto-detected from
@@ -32,7 +32,7 @@ two files in.
 - **Accessible** — `role="dialog"`, keyboard operable, visible focus rings,
   Escape collapses the panel, WCAG 2.2 target sizes (≥ 44px).
 - **Persistence** — the choice is stored in `localStorage` (versioned, 12-month
-  expiry); returning visitors don't see the banner again until it expires.
+  expiry); returning visitors don't see the banner again until it expires. A region change or invalid saved data prompts a fresh choice. GPC overrides saved marketing consent.
 
 ## Install
 
@@ -75,7 +75,7 @@ and pass the matching region.
 | `language` | string | `'auto'` | `en`/`he`/`ar`/`ru`, or auto-detect. |
 | `privacyPolicyUrl` | string | — | Adds a privacy-policy link. |
 | `brandColor` | string | `#2563eb` | Primary button / accent color. |
-| `ukFirstPartyAnalyticsExempt` | bool | `true` | UK-only: allow first-party analytics without consent (DUAA 2025). |
+| `ukFirstPartyAnalyticsExempt` | bool | `false` | UK-only: explicitly enable after verifying that your analytics implementation meets the exemption conditions. |
 | `onChange` | function | — | Called with `{analytics, marketing}` whenever consent is set. |
 
 ## Methods
@@ -110,3 +110,9 @@ Open [`demo.html`](demo.html) in a browser — pick a region and language, click
   interpretations of GDPR accountability and Québec Law 25 do), add a POST in
   `onChange`.
 - Region is caller-supplied (see above).
+
+## Behavior checks
+
+Run `node --test tests/cookie-consent.test.cjs` from the repository root (Node.js 22 or later). The same tests run on pull requests. They exercise consent logic and DOM interactions using a small test double; they do not replace real-browser, screen-reader, or network-tracking checks.
+
+**Integration change:** `onChange` now receives the denied state on a first opt-in visit. Existing `dataLayer` integrations also receive the default denied signal without needing a `gtmId` option. Configure tags before loading them; a consent signal alone does not block third-party requests.

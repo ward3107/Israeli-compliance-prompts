@@ -14,3 +14,8 @@ jobs:
           python-version: "3.12"
       - name: Validate templates and jurisdiction packs
         run: python3 scripts/validate.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test cookie consent behavior
+        run: node --test tests/cookie-consent.test.cjs
