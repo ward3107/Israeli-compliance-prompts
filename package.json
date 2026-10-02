@@ -1,9 +1,9 @@
 {
   "name": "web-compliance-prompts",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "private": true,
   "scripts": {
-    "test": "node --test tests/cookie-consent.test.cjs",
+    "test": "node --test tests/cookie-consent.test.cjs tests/documents.test.cjs",
     "test:browser": "node scripts/test-browser.cjs"
   },
   "devDependencies": {

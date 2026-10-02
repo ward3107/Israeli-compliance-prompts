@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.5.0
+
+- Add browser-local, editable Hebrew privacy, terms and refund drafts for Israel-only projects.
+- Preserve unknown facts; omit refunds when no sales are declared; avoid invented retention periods, blanket cancellation terms or legal approvals.
+- Export print-ready HTML/TXT and a review manifest, include drafts in lawyer packets, keep them out of installable plugins.
+- Save/resume edits, detect changed facts, confirm destructive regeneration and gate unsupported markets.
+- Add pure-engine and three-browser document-flow verification to CI.
+
+
 ## 2.4.0
 
 - Add a shared 12-preset gallery and guided color, radius and font controls.

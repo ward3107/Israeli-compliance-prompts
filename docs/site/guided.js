@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var $ = function (id) { return document.getElementById(id); };
-  var step = 0, toolkit, studio, theme = 'ocean';
+  var step = 0, toolkit, studio, documentStudio, theme = 'ocean';
   var themes = ToolkitThemes.presets;
   var questions = {sales:'אפשר לקנות מוצרים או שירותים באתר?',accounts:'לקוחות יכולים לפתוח חשבון?',forms:'יש טפסים לאיסוף פרטים?',tracking:'משתמשים בכלי מדידה או פרסום?',sensitive:'נאסף מידע רפואי, מידע על ילדים או מידע רגיש אחר?'};
   var answers = {yes:'כן',no:'לא',unknown:'לא יודע/ת'};
@@ -18,7 +18,7 @@
   function project() {
     var values = {}; fields.forEach(function(id){values[id]=$(id).value.trim();});
     var response = {}; Object.keys(questions).forEach(function(key){response[key]=$('answer-'+key).value;});
-    return {format:'web-compliance-project',version:1,theme:theme,values:values,answers:response,studio:studio.state()};
+    return {format:'web-compliance-project',version:1,theme:theme,values:values,answers:response,studio:studio.state(),documents:documentStudio?documentStudio.state():undefined};
   }
   function config() {
     // A client's markets are not a visitor's verified location. Start opt-in everywhere.
@@ -47,7 +47,7 @@
     step=next;document.querySelectorAll('[data-step]').forEach(function(el){el.hidden=Number(el.dataset.step)!==step;});
     document.querySelectorAll('.progress li').forEach(function(el,i){if(i===step)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
     $('back').hidden=step===0;$('next').hidden=step===3;$('next').textContent=step===2?'הכנת החבילה':'ממשיכים';$('form-error').textContent='';
-    if(step===2)preview();if(step===3)summary();$('step-'+step).focus();
+    if(step===2)preview();if(step===3){summary();documentStudio.refresh();}$('step-'+step).focus();
   }
   function openQuestions() {
     var list=[];Object.keys(questions).forEach(function(key){if($('answer-'+key).value==='unknown')list.push(questions[key]);});
@@ -100,18 +100,21 @@
     save(ToolkitZip(files),wp?'web-compliance-wordpress.zip':'web-compliance-install.zip');$('download-status').textContent='הקובץ הוכן להורדה. התקנה ובדיקה באתר עדיין נדרשות.';
   }
   function reviewDownload() {
-    var files={'review-summary.html':reviewReport(),'project.json':json(project()),'STATUS.txt':'DRAFT FOR LEGAL REVIEW. No lawyer has reviewed or signed this project. No production scan or integration test has been performed.'};
+    var reviewProject=project();if($('market').value!=='il')delete reviewProject.documents;
+    var files={'review-summary.html':reviewReport(),'project.json':json(reviewProject),'STATUS.txt':'DRAFT FOR LEGAL REVIEW. No lawyer has reviewed or signed this project. No production scan or integration test has been performed.'};
     if(toolkit && $('market').value!=='unknown') {
       var codes=$('market').value.split('+');if(codes.includes('us-ca'))codes.unshift('us');
       codes.forEach(function(code){files['sources/'+code+'.json']=json(toolkit.packs[code]);});
     }
+    Object.assign(files,documentStudio.files(true));
     save(ToolkitZip(files),'legal-review-package.zip');$('download-status').textContent='התיק הוכן להורדה. פתחו review-summary.html והעבירו לעורך דין לבחירתכם. דבר לא נשלח אוטומטית.';
   }
   async function resume(event) {
     var file=event.target.files[0];if(!file)return;
     try {
-      if(file.size>100000)throw new Error();var value=JSON.parse(await file.text());
+      if(file.size>600000)throw new Error();var value=JSON.parse(await file.text());
       if(value.format!=='web-compliance-project'||value.version!==1||!Object.hasOwn(themes,value.theme)||!value.values||!value.answers)throw new Error();
+      if(value.documents!==undefined)documentStudio.validate(value.documents);
       if(value.studio!==undefined)studio.validate(value.studio);
       var defaults={background:themes[value.theme].colors[1],foreground:themes[value.theme].colors[2],radius:String(themes[value.theme].radius),font:themes[value.theme].font};
       Object.keys(defaults).forEach(function(key){if(value.values[key]===undefined)value.values[key]=defaults[key];});
@@ -119,13 +122,14 @@
       if(!/^#[0-9a-f]{6}$/i.test(value.values.accent)||!httpUrl(value.values['site-url'])||!privacyUrl(value.values['privacy-url']))throw new Error();
       if(!/^#[0-9a-f]{6}$/i.test(value.values.background)||!/^#[0-9a-f]{6}$/i.test(value.values.foreground)||!/^([0-9]|1[0-9]|2[0-8])$/.test(value.values.radius))throw new Error();
       Object.keys(questions).forEach(function(key){if(!Object.hasOwn(answers,value.answers[key]))throw new Error();});
-      fields.forEach(function(id){$(id).value=value.values[id];});Object.keys(questions).forEach(function(key){$('answer-'+key).value=value.answers[key];});theme=value.theme;studio.restore(value.studio);markTheme();show(0);$('load-status').textContent='הפרויקט נטען. אפשר לבדוק ולעדכן את הפרטים.';
-    } catch(error) {$('load-status').textContent='הקובץ אינו פרויקט תקין מהמערכת. בחרו קובץ JSON ששמרתם כאן (עד 100KB).';}
+      fields.forEach(function(id){$(id).value=value.values[id];});Object.keys(questions).forEach(function(key){$('answer-'+key).value=value.answers[key];});theme=value.theme;studio.restore(value.studio);documentStudio.restore(value.documents);markTheme();show(0);$('load-status').textContent='הפרויקט נטען. אפשר לבדוק ולעדכן את הפרטים.';
+    } catch(error) {$('load-status').textContent='הקובץ אינו פרויקט תקין מהמערכת. בחרו קובץ JSON ששמרתם כאן (עד 600KB).';}
     event.target.value='';
   }
   function markTheme(){document.querySelectorAll('[data-theme]').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.theme===theme));});}
   Object.keys(questions).forEach(function(key){var label=document.createElement('label'),select=document.createElement('select');select.id='answer-'+key;label.htmlFor=select.id;label.textContent=questions[key];Object.keys(answers).forEach(function(answer){var option=document.createElement('option');option.value=answer;option.textContent=answers[answer];select.append(option);});select.value='unknown';$('business-questions').append(label,select);});
   studio=ToolkitStudio($('copy-studio'),function(){return $('output-language').value;},preview);
+  documentStudio=ToolkitDocumentStudio($('document-studio'),project,save);
   $('output-language').addEventListener('change',function(){studio.syncLanguage();});
   $('setup').addEventListener('submit',function(event){event.preventDefault();if(step<3 && toolkit && valid(step))show(step+1);});
   $('next').addEventListener('click',function(){if(valid(step))show(step+1);});$('back').addEventListener('click',function(){show(step-1);});
