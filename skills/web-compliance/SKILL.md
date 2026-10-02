@@ -55,17 +55,23 @@ relying on them as authoritative.
 ## Workflow (follow every time)
 
 1. **Identify the artifact** the user wants (match by name or description).
-2. **Ask which markets the site serves** — this is the jurisdiction question and
+2. **Reuse any facts already supplied** (including a project profile), then ask only for missing details. **Ask which markets the site serves** — this is the jurisdiction question and
    it comes FIRST, because it changes the legal requirements, not just wording.
    Offer: Israel / EU-EEA / UK / United States (ask which states) / Canada
    (ask which province) / a combination. If they name a market with no pack yet
    (Australia, Brazil, or a US state other than California), say plainly there is
-   no pack, that you can still generate the artifact using the closest pack, and
-   that a local lawyer must review it.
+   no pack. Do not substitute a nearby market or imply legal coverage. Request
+   a reviewed local pack before producing market-specific legal instructions.
 3. **Ask for the output language** — Hebrew / Arabic / English / Russian.
 4. **Ask for the variables** for that artifact (see below). All at once, grouped
    naturally. Mark optional fields as (optional).
-5. **Read the template** from `templates/` and the pack(s) from
+5. **Check drafting scope first.** Cookie banner, accessibility baseline and
+   accessibility widget accept all shipped packs. Privacy policy, terms, refunds,
+   disclaimer, checkout, freelancer contract, email marketing, accessibility
+   statement and onboarding remain Israel-specific drafts: accept `il` only.
+   Data-subject-rights is an Israeli-site EU overlay: require `il` and `eu`.
+   Explain unsupported scope instead of presenting translation as legal coverage.
+   **Read the template** from `templates/` and the pack(s) from
    `jurisdictions/`.
 6. **Compose and output** — replace every `[BRACKET]`, set `[JURISDICTIONS]` to
    the chosen markets, and fill `== LANGUAGE ==`. Fold in the requirements from
@@ -295,3 +301,13 @@ After collecting all answers, output the filled prompt like this:
 ```
 
 Always include the verification checklist at the end so the user can check the output.
+
+## Reusable profiles and reproducible composition
+
+When working in the full repository, use `scripts/generate.py` with an
+`examples/profiles/*.json` profile adapted to the user's actual facts. The CLI
+loads inheritance, validates source packs, fails on unknown markets or missing
+facts and records source hashes, review status, conflicts and assumptions.
+The skill-only installation does not include repository scripts: follow the
+same scope and missing-fact rules manually. Keep all legal claims as drafts for
+qualified review; never turn a passing engineering test into legal sign-off.

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Try the cookie consent banner and start with reusable website compliance project profiles. Drafts for review, with sourced jurisdiction packs.">
+  <title>Web Compliance Prompts — try it, check it, adapt it</title>
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="cookie-consent.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="masthead">
+    <a class="wordmark" href="./">Web Compliance Prompts</a>
+    <nav aria-label="Main"><a href="#examples">Examples</a><a href="https://github.com/ward3107/web-compliance-prompts/blob/main/README.he.md" lang="he" dir="rtl">מדריך בעברית</a><a href="https://github.com/ward3107/web-compliance-prompts">GitHub</a></nav>
+  </header>
+  <main id="main">
+    <section class="intro" aria-labelledby="title">
+      <div class="intro-copy">
+        <p class="edition">A practical toolkit for website builders</p>
+        <h1 id="title">Start with facts.<br>Build with care.</h1>
+        <p class="lead">Cookie consent, privacy drafts and accessibility prompts, with sources you can check and project details you can reuse.</p>
+        <a class="button secondary" href="https://github.com/ward3107/web-compliance-prompts#install">Get the toolkit</a>
+        <p class="scope">13 templates · 6 jurisdiction packs · 4 output languages</p>
+      </div>
+      <section class="workbench" aria-labelledby="demo-title">
+        <div class="workbench-heading"><span class="status-dot" aria-hidden="true"></span><h2 id="demo-title">Try the cookie banner</h2></div>
+        <p>Choose a market and language. Your choices stay in this browser; this demo loads no analytics or advertising tools.</p>
+        <div class="fields">
+          <label>Market<select id="region"><option value="eu">European Union / EEA</option><option value="il">Israel</option><option value="uk">United Kingdom</option><option value="us-ca">California</option><option value="us">United States — federal layer</option><option value="ca">Canada</option></select></label>
+          <label>Banner language<select id="language"><option value="en">English</option><option value="he">עברית</option><option value="ar">العربية</option><option value="ru">Русский</option></select></label>
+        </div>
+        <label class="check"><input type="checkbox" id="uk-exempt"> Enable eligible UK first-party analytics exemption</label>
+        <div class="demo-actions"><button class="button" id="try" type="button">Try the banner</button><button class="text-button" id="reset" type="button">Reset saved demo choice</button></div>
+        <div class="consent-state" role="status" aria-live="polite"><span>Current demo choice</span><p id="state">Choose “Try the banner” to begin.</p></div>
+        <p class="small">GPC is read from your browser. Region selection simulates a visitor location; the widget does not detect it.</p>
+      </section>
+    </section>
+    <aside class="review-note" aria-label="Review status"><strong>A starting point for review.</strong> These are draft templates, not legal advice or a compliance guarantee. Every jurisdiction pack is still awaiting qualified legal review.</aside>
+    <section class="start" aria-labelledby="start-title">
+      <h2 id="start-title">From project facts to a useful draft</h2>
+      <ol class="steps"><li><h3>Save a project profile</h3><p>Record the markets, language, business details and tools actually used on the site.</p></li><li><h3>Generate a prompt</h3><p>Get the filled template, selected source packs, known conflicts and a reproducible build manifest.</p></li><li><h3>Review and test</h3><p>Check legal applicability, then verify the implemented behavior, accessibility and actual tracking requests.</p></li></ol>
+    </section>
+    <section id="examples" aria-labelledby="examples-title">
+      <h2 id="examples-title">Three examples to start from</h2>
+      <p class="section-copy">Synthetic business details, ready to replace. Each example includes a reusable profile and a complete cookie-banner prompt.</p>
+      <div class="example-list">
+        <article><h3>Israeli business</h3><p>Hebrew output, RTL and the Israel pack.</p><div><a href="profiles/israel-he.json" download>Project profile</a><a href="examples/israel-he-cookie-banner.md">Filled prompt</a></div></article>
+        <article><h3>European shop</h3><p>English output and the EU / EEA pack.</p><div><a href="profiles/eu-shop-en.json" download>Project profile</a><a href="examples/eu-shop-en-cookie-banner.md">Filled prompt</a></div></article>
+        <article><h3>California site</h3><p>California with the inherited US federal layer.</p><div><a href="profiles/california-en.json" download>Project profile</a><a href="examples/california-en-cookie-banner.md">Filled prompt</a></div></article>
+      </div>
+    </section>
+    <section class="verification" aria-labelledby="verify-title"><h2 id="verify-title">Make the checks part of the work</h2><p>The repository tests consent logic, pack structure, draft generation and real browser interactions in Chromium, Firefox and WebKit. Network checks use synthetic trackers; your production tags need their own verification.</p><a href="https://github.com/ward3107/web-compliance-prompts/actions">See the automated checks</a></section>
+  </main>
+  <footer><span>Web Compliance Prompts · MIT license</span><a href="privacy.html">Demo privacy information</a></footer>
+  <script src="cookie-consent.js"></script>
+  <script src="site.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consent integration test fixture</title>
+  <link rel="stylesheet" href="/cookie-consent.css">
+</head>
+<body>
+  <main>
+    <h1>Consent integration fixture</h1>
+    <p>Synthetic analytics and marketing requests are sent only to this local test server.</p>
+    <button id="settings" type="button">Cookie settings</button>
+  </main>
+  <script src="/cookie-consent.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    window.dataLayer = [];
+    CookieConsent.init({
+      region: params.get('region') || 'eu',
+      language: params.get('language') || 'en',
+      ukFirstPartyAnalyticsExempt: params.get('ukExempt') === 'true',
+      privacyPolicyUrl: '/privacy',
+      onChange(consent) {
+        if (consent.analytics) fetch('/analytics-event');
+        if (consent.marketing) fetch('/marketing-event');
+      }
+    });
+    document.getElementById('settings').addEventListener('click', () => CookieConsent.show());
+  </script>
+</body>
+</html>

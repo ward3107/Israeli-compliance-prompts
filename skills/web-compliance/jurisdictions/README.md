@@ -64,3 +64,17 @@ exist, so a typo cannot silently drop a jurisdiction.
 
 > These packs are structured references, not legal advice. Every pack must be
 > reviewed by a lawyer qualified in that jurisdiction before it is relied on.
+
+## Schema and review provenance
+
+Install dependencies with `python -m pip install -r requirements.txt` before
+running validation. `schemas/jurisdiction.schema.json` defines the supported
+pack shape. Each framework needs its own ID, name, governs list, HTTP(S) source
+citation and boolean verification status. Duplicate YAML keys and framework IDs,
+invalid dates, unknown fields, missing references and inheritance cycles fail.
+
+`last_reviewed` retains the existing source-content review date; it is not legal
+sign-off. Optional `sources_checked_on` records a source check separately.
+Changing `needs_legal_review` to false requires an identified `reviewed_by` and
+an ISO `legal_reviewed_on` date. Do not advance any review date simply because
+structural validation or browser tests pass.

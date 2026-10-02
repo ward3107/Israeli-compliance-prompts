@@ -164,3 +164,19 @@ test('unknown region defaults to opt-in', () => {
   assert.equal(h.changes[0].analytics, false);
   assert.equal(h.changes[0].marketing, false);
 });
+
+test('custom category descriptions are escaped and do not leak into other instances', () => {
+  const h = setup();
+  h.widget.init({ ...h.config, region: 'eu', categoryDescriptions: { en: { analytics: '<b>Example analytics</b>' } } });
+  assert.match(h.roots[0].innerHTML, /&lt;b&gt;Example analytics&lt;\/b&gt;/);
+  h.widget.init({ ...h.config, region: 'eu' });
+  assert.doesNotMatch(h.roots[0].innerHTML, /Example analytics/);
+});
+test('blocked storage retains the current choice when reopening settings', () => {
+  const h = setup({ blocked: true });
+  h.widget.init({ ...h.config, region: 'eu' });
+  h.click('accept');
+  h.widget.show();
+  assert.match(h.roots[0].innerHTML, /id="cc-analytics" checked/);
+  assert.match(h.roots[0].innerHTML, /id="cc-marketing" checked/);
+});

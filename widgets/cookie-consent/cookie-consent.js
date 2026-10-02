@@ -52,9 +52,9 @@
       save: 'Save preferences',
       privacy: 'Privacy policy',
       necessary: 'Necessary',
-      necessaryDesc: 'Required for the site to function. Always on. No personal data shared.',
+      necessaryDesc: 'Required for core site functions. Always on. See the privacy policy for data handling.',
       analytics: 'Analytics',
-      analyticsDesc: 'Google Analytics — page views and session duration, to improve the site.',
+      analyticsDesc: 'Measures site usage to help improve the site. See the privacy policy for the tools and data involved.',
       marketing: 'Marketing',
       marketingDesc: 'Advertising pixels — used to show relevant ads and measure campaigns.',
       always: 'Always on',
@@ -72,9 +72,9 @@
       save: 'שמירת העדפות',
       privacy: 'מדיניות פרטיות',
       necessary: 'הכרחיות',
-      necessaryDesc: 'נדרשות לתפקוד האתר. תמיד פעילות. לא משותף מידע אישי.',
+      necessaryDesc: 'נדרשות לפעולות הבסיסיות באתר. תמיד פעילות. פרטי השימוש במידע מופיעים במדיניות הפרטיות.',
       analytics: 'אנליטיקה',
-      analyticsDesc: 'Google Analytics — צפיות ומשך ביקור, לשיפור האתר.',
+      analyticsDesc: 'מדידת השימוש באתר לצורך שיפורו. הכלים והמידע המעורבים מפורטים במדיניות הפרטיות.',
       marketing: 'שיווק',
       marketingDesc: 'פיקסלים פרסומיים — להצגת מודעות רלוונטיות ומדידת קמפיינים.',
       always: 'תמיד פעיל',
@@ -92,9 +92,9 @@
       save: 'حفظ التفضيلات',
       privacy: 'سياسة الخصوصية',
       necessary: 'ضرورية',
-      necessaryDesc: 'مطلوبة لعمل الموقع. مفعّلة دائمًا. لا تتم مشاركة بيانات شخصية.',
+      necessaryDesc: 'مطلوبة لوظائف الموقع الأساسية. مفعّلة دائمًا. راجع سياسة الخصوصية لمعرفة كيفية التعامل مع البيانات.',
       analytics: 'تحليلات',
-      analyticsDesc: 'Google Analytics — مشاهدات الصفحات ومدة الجلسة، لتحسين الموقع.',
+      analyticsDesc: 'تقيس استخدام الموقع لتحسينه. راجع سياسة الخصوصية لمعرفة الأدوات والبيانات المستخدمة.',
       marketing: 'تسويق',
       marketingDesc: 'بكسلات إعلانية — لعرض إعلانات ملائمة وقياس الحملات.',
       always: 'مفعّل دائمًا',
@@ -112,9 +112,9 @@
       save: 'Сохранить настройки',
       privacy: 'Политика конфиденциальности',
       necessary: 'Необходимые',
-      necessaryDesc: 'Нужны для работы сайта. Всегда включены. Личные данные не передаются.',
+      necessaryDesc: 'Нужны для основных функций сайта. Всегда включены. Обработка данных описана в политике конфиденциальности.',
       analytics: 'Аналитика',
-      analyticsDesc: 'Google Analytics — просмотры и длительность сеанса, для улучшения сайта.',
+      analyticsDesc: 'Измеряет использование сайта для его улучшения. Инструменты и данные описаны в политике конфиденциальности.',
       marketing: 'Маркетинг',
       marketingDesc: 'Рекламные пиксели — показ релевантной рекламы и оценка кампаний.',
       always: 'Всегда включено',
@@ -198,6 +198,7 @@
 
   var CookieConsent = {
     _cfg: null,
+    _consent: null,
     _t: null,
     _model: 'opt_in',
     _gpc: false,
@@ -208,9 +209,16 @@
       this._destroy();
       var cfg = config || {};
       this._cfg = cfg;
+      this._consent = null;
 
       var lang = resolveLanguage(cfg.language);
-      this._t = I18N[lang];
+      this._t = Object.assign({}, I18N[lang]);
+      var descriptions = cfg.categoryDescriptions && cfg.categoryDescriptions[lang];
+      if (descriptions) {
+        ['necessary', 'analytics', 'marketing'].forEach(function (category) {
+          if (typeof descriptions[category] === 'string') this._t[category + 'Desc'] = descriptions[category];
+        }, this);
+      }
       var region = (cfg.region && cfg.region !== 'auto') ? cfg.region : 'auto';
       // 'auto' => we cannot geolocate client-side; default to the strictest model.
       this._model = OPT_OUT_REGIONS.indexOf(region) !== -1 ? 'opt_out' : 'opt_in';
@@ -245,6 +253,7 @@
     _apply: function (consent, persist) {
       // Browser privacy signals override any previously saved choice.
       consent = { analytics: !!consent.analytics, marketing: !!consent.marketing && !this._gpc };
+      this._consent = consent;
       if (this._cfg.gtmId || global.dataLayer) pushConsentUpdate(consent);
       if (persist) writeStored(consent, this._cfg.region || 'auto', resolveLanguage(this._cfg.language));
       if (typeof this._cfg.onChange === 'function') {
@@ -374,7 +383,7 @@
       var lang = resolveLanguage(this._cfg.language);
       var region = (this._cfg.region && this._cfg.region !== 'auto') ? this._cfg.region : 'auto';
       var ukExempt = region === 'uk' && this._cfg.ukFirstPartyAnalyticsExempt === true;
-      var stored = readStored(region) || { analytics: !!ukExempt, marketing: false };
+      var stored = this._consent || readStored(region) || { analytics: !!ukExempt, marketing: false };
       this._render(lang, region, ukExempt, stored);
     }
   };
@@ -383,6 +392,8 @@
 
   function resolveLanguage(pref) {
     if (pref && pref !== 'auto' && I18N[pref]) return pref;
+    var pageLang = document.documentElement && (document.documentElement.lang || '').slice(0, 2).toLowerCase();
+    if (I18N[pageLang]) return pageLang;
     var nav = (global.navigator && (global.navigator.language || '')).slice(0, 2).toLowerCase();
     return I18N[nav] ? nav : 'en';
   }

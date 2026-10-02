@@ -1,18 +1,33 @@
 {
   "name": "web-compliance",
-  "owner": { "name": "ward3107", "url": "https://github.com/ward3107" },
+  "owner": {
+    "name": "ward3107",
+    "url": "https://github.com/ward3107"
+  },
   "metadata": {
     "description": "Jurisdiction-aware AI coding prompts for website legal compliance.",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "plugins": [
     {
       "name": "web-compliance",
       "source": "./",
-      "description": "13 compliance artifact templates composed against 5 per-jurisdiction rule packs (Israel, EU/EEA, UK, US federal, California) with citations and review dates. Hebrew/Arabic/English/Russian.",
-      "version": "2.0.0",
+      "description": "13 draft compliance templates, 6 sourced jurisdiction packs, reusable project profiles and tested cookie consent code. Hebrew/Arabic/English/Russian. Legal review remains pending.",
+      "version": "2.1.0",
       "category": "legal",
-      "keywords": ["compliance","privacy","gdpr","eprivacy","accessibility","wcag","israel","eu","rtl","hebrew","cursor"]
+      "keywords": [
+        "compliance",
+        "privacy",
+        "gdpr",
+        "eprivacy",
+        "accessibility",
+        "wcag",
+        "israel",
+        "eu",
+        "rtl",
+        "hebrew",
+        "cursor"
+      ]
     }
   ]
 }

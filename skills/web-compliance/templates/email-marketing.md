@@ -1,8 +1,11 @@
 # 📧 Email Marketing Compliance — Deep Version
 
-You are a senior frontend developer. Build a COMPLIANT EMAIL MARKETING
-OPT-IN SYSTEM satisfying Israel's Computer Law 5755-1995
-and GDPR Article 6 (for EU contacts).
+You are a senior frontend developer. Build a draft EMAIL MARKETING
+OPT-IN SYSTEM drafted against the selected jurisdiction packs.
+For Israel, consult the Communications (Telecommunications and Broadcasting)
+Law, 1982, section 30A, not the Computer Law. Confirm applicability with counsel.
+Official government guidance: https://www.gov.il/BlobFolder/news/cpfta_dncapi/he/%D7%9E%D7%93%D7%A8%D7%99%D7%9A%20%D7%9C%D7%A2%D7%95%D7%A1%D7%A7%D7%99%D7%9D.pdf
+For EU contacts, include the EU pack and verify consent and messaging rules.
 
 == PROJECT INFO ==
 Framework: [FRAMEWORK]
@@ -38,7 +41,9 @@ Store: email, signup timestamp, IP, confirmation timestamp
 Every marketing email must have a ONE-CLICK unsubscribe link.
 Clicking: immediately remove from list, show confirmation page.
 Do NOT ask 'why are you unsubscribing?' BEFORE completing the action.
-Process unsubscribes within 10 business days (Israeli law).
+Apply unsubscribe requests immediately in the implementation. Do not present
+a ten-business-day deadline as Israeli law; verify the governing deadline in
+the selected source pack and with a qualified reviewer.
 
 == IF EU SUBSCRIBERS == (include only if EU_SUBSCRIBERS = YES)
 Add GDPR consent language: 'Legal basis: Consent (Article 6(1)(a) GDPR)'
