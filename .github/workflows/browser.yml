@@ -23,6 +23,17 @@ jobs:
       - run: python scripts/build_site.py
       - name: Test customizer and downloaded packages
         run: node scripts/test-builder.cjs
+      - name: Test guided setup and private review packages
+        run: node scripts/test-guided.cjs
+      - name: Start disposable WordPress QA
+        run: docker compose -p wct-guided-qa -f tests/wordpress.compose.yml up -d --wait
+      - name: Initialize disposable WordPress
+        run: docker compose -p wct-guided-qa -f tests/wordpress.compose.yml exec -T wordpress php /qa/install.php
+      - name: Test real WordPress ZIP installation
+        run: node scripts/test-wordpress.cjs
+      - name: Remove disposable WordPress QA
+        if: always()
+        run: docker compose -p wct-guided-qa -f tests/wordpress.compose.yml down --volumes
       - name: Test browser interactions, accessibility and synthetic tracking
         run: npm run test:browser
       - name: Save reports and screenshots

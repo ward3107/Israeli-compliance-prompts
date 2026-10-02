@@ -1,0 +1,38 @@
+# Isolated, disposable QA only. Never connects to a production database.
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: local-qa-root-only
+      MARIADB_DATABASE: wct_qa
+      MARIADB_USER: wct_qa
+      MARIADB_PASSWORD: local-qa-db-only
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+  wordpress:
+    image: wordpress:php8.3-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8766:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wct_qa
+      WORDPRESS_DB_USER: wct_qa
+      WORDPRESS_DB_PASSWORD: local-qa-db-only
+      WORDPRESS_CONFIG_EXTRA: "define('WP_HOME', 'http://127.0.0.1:8766'); define('WP_SITEURL', 'http://127.0.0.1:8766'); define('FS_METHOD', 'direct');"
+    tmpfs:
+      - /var/www/html
+    volumes:
+      - ./wordpress-install.php:/qa/install.php:ro
+    healthcheck:
+      test: [CMD, curl, -f, http://localhost/wp-admin/install.php]
+      interval: 3s
+      timeout: 5s
+      retries: 30
