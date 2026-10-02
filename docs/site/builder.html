@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>התאמת הטולקיט לאתר שלכם</title>
-  <link rel="stylesheet" href="site.css"><link rel="stylesheet" href="builder.css">
+  <link rel="stylesheet" href="site.css"><link rel="stylesheet" href="builder.css"><link rel="stylesheet" href="themes.css">
 </head>
 <body>
   <a class="skip" href="#main">דלגו לתוכן</a>
@@ -13,10 +13,10 @@
     <div class="studio">
       <form id="builder" class="controls">
         <fieldset><legend>עיצוב</legend>
-          <div class="presets" role="group" aria-label="עיצובים מוכנים"><button type="button" data-preset="ocean">כחול ים</button><button type="button" data-preset="forest">ירוק יער</button><button type="button" data-preset="night">לילה</button></div>
+          <div id="theme-gallery" class="theme-gallery" role="group" aria-label="עיצובים מוכנים"></div>
           <div class="fields"><label>צבע כפתורים<input id="brand" type="color" value="#145f78"></label><label>רקע הבאנר<input id="background" type="color" value="#ffffff"></label><label>צבע טקסט<input id="foreground" type="color" value="#183348"></label><label>עיגול פינות <output id="radius-value">12</output><input id="radius" type="range" min="0" max="28" value="12"></label></div>
-          <div class="fields"><label>גופן<select id="font"><option value="system">גופן המערכת</option><option value="inherit">גופן האתר שלכם</option><option value="serif">Serif</option></select></label><label>מיקום<select id="position"><option value="bottom">בתחתית</option><option value="top">בחלק העליון</option><option value="corner">בפינה</option></select></label></div>
-          <p id="contrast" role="status"></p>
+          <div class="fields"><label>גופן<select id="font"><option value="system">גופן המערכת</option><option value="inherit">גופן האתר שלכם</option><option value="serif">Serif</option></select></label><label>מיקום<select id="position"><option value="bottom">בתחתית</option><option value="top">בחלק העליון</option><option value="corner">כרטיס בפינה</option></select></label></div>
+          <div id="copy-studio"></div><p id="contrast" role="status"></p>
         </fieldset>
         <fieldset><legend>האתר והקהל</legend>
           <div class="fields"><label>שפת הבאנר והמסמכים<select id="language"><option value="he">עברית</option><option value="ar">العربية</option><option value="en">English</option><option value="ru">Русский</option></select></label><label>אזור המבקרים<select id="region"><option value="il">ישראל</option><option value="eu">האיחוד האירופי</option><option value="uk">בריטניה</option><option value="us-ca">קליפורניה</option><option value="us">ארה״ב — שכבה פדרלית</option><option value="ca">קנדה</option><option value="il+eu">ישראל והאיחוד האירופי</option></select></label></div>
@@ -40,5 +40,5 @@
     </div>
   </main>
   <footer><span>Web Compliance Prompts</span><a href="privacy.html">פרטיות הדמו</a></footer>
-  <script src="zip.js"></script><script src="builder.js"></script>
+  <script src="zip.js"></script><script src="themes.js"></script><script src="studio.js"></script><script src="builder.js"></script>
 </body></html>

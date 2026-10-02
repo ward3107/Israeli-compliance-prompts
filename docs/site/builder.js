@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var $ = function (id) { return document.getElementById(id); }, data, factValues = {};
+  var $ = function (id) { return document.getElementById(id); }, data, studio, factValues = {};
   var names = {
     'cookie-banner': 'באנר עוגיות', 'accessibility-baseline': 'נגישות בסיסית לאתר',
     'accessibility-widget': 'רכיב הגדרות נגישות', 'accessibility-statement': 'הצהרת נגישות',
@@ -57,12 +57,12 @@
       (position==='top'?'.cc-root { top:0; bottom:auto; } .cc-root .cc-banner { border-bottom:1px solid var(--cc-border); border-radius:0 0 '+r+'px '+r+'px; }\n':
        position==='corner'?'.cc-root { left:auto; right:16px; bottom:16px; width:min(440px,calc(100% - 32px)); max-height:calc(100dvh - 32px); } .cc-root .cc-banner { border-bottom:1px solid var(--cc-border); border-radius:'+r+'px; }\n':'');
   }
-  function config() { return {region:markets().length>1?'auto':markets()[0],language:$('language').value,privacyPolicyUrl:$('privacy').value.trim(),brandColor:$('brand').value,ukFirstPartyAnalyticsExempt:false}; }
-  function preview() {
+  function config() { return {textOverrides:studio?studio.copy():{},region:markets().length>1?'auto':markets()[0],language:$('language').value,privacyPolicyUrl:$('privacy').value.trim(),brandColor:$('brand').value,ukFirstPartyAnalyticsExempt:false}; }
+  function preview() {if(studio)studio.syncLanguage();
     $('radius-value').textContent=$('radius').value;
     var ratio=contrast($('foreground').value,$('background').value);
     $('contrast').textContent=(ratio>=4.5?'ניגודיות הטקסט תקינה: ':'בחרו צבעים מנוגדים יותר: ')+ratio.toFixed(2)+' / 4.5';
-    $('preview').contentWindow.postMessage({type:'compliance-preview',css:css(),config:config(),name:$('business').value},location.origin);
+    $('preview').contentWindow.postMessage({type:'compliance-preview',css:css()+(studio?studio.css():''),config:config(),name:$('business').value},location.origin);
   }
   function renderArtifacts() {
     var prior=selected(); $('artifacts').replaceChildren();
@@ -108,7 +108,7 @@
     try {
       var p=profile(), files={}, cfg=config();
       Object.keys(data.files).forEach(function(path){files['toolkit/'+path]=data.files[path];});
-      files['project-profile.json']=JSON.stringify(p,null,2); files['theme.css']=css(); files['consent-config.json']=JSON.stringify(cfg,null,2);
+      files['project-profile.json']=JSON.stringify(p,null,2); files['theme.css']=css()+studio.css(); files['consent-config.json']=JSON.stringify(cfg,null,2);
       files['cookie-consent.js']=data.files['widgets/cookie-consent/cookie-consent.js'];files['cookie-consent.css']=data.files['widgets/cookie-consent/cookie-consent.css'];
       files['install.js']='CookieConsent.init(Object.assign('+JSON.stringify(cfg).replace(/</g,'\\u003c')+', {onChange: function(consent) { window.dispatchEvent(new CustomEvent("compliance:consent", {detail:consent})); }}));\n';
       files['demo.html']='<!doctype html><html lang="'+p.language+'" dir="'+(['he','ar'].includes(p.language)?'rtl':'ltr')+'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Consent preview</title><link rel="stylesheet" href="cookie-consent.css"><link rel="stylesheet" href="theme.css"><body><h1>Consent preview</h1><button onclick="CookieConsent.show()">Cookie preferences</button><script src="cookie-consent.js"></script><script src="install.js"></script></body></html>';
@@ -124,7 +124,8 @@
   $('profile-download').addEventListener('click',function(){if(check())save(new Blob([JSON.stringify(profile(),null,2)],{type:'application/json'}),'project-profile.json');});
   $('reopen').addEventListener('click',preview);
   ['desktop','mobile'].forEach(function(id){$(id).addEventListener('click',function(){ $('preview').classList.toggle('mobile',id==='mobile');$('desktop').setAttribute('aria-pressed',String(id==='desktop'));$('mobile').setAttribute('aria-pressed',String(id==='mobile'));});});
-  document.querySelectorAll('[data-preset]').forEach(function(button){button.addEventListener('click',function(){var colors=({ocean:['#145f78','#ffffff','#183348'],forest:['#216348','#f5fff8','#183d2e'],night:['#90c8ff','#152435','#f1f6fa']})[button.dataset.preset];['brand','background','foreground'].forEach(function(id,i){$(id).value=colors[i];});preview();});});
+  studio=ToolkitStudio($('copy-studio'),function(){return $('language').value;},preview);
+  ToolkitThemes.gallery($('theme-gallery'),'data-preset',function(key,preset){['brand','background','foreground'].forEach(function(id,i){$(id).value=preset.colors[i];});$('radius').value=preset.radius;$('font').value=preset.font;preview();});
   window.addEventListener('message',function(event){if(event.origin===location.origin && event.source===$('preview').contentWindow && event.data && event.data.type==='compliance-preview-ready')preview();});
   fetch('toolkit.json').then(function(response){if(!response.ok)throw new Error('Toolkit unavailable');return response.json();}).then(function(toolkit){data=toolkit;renderArtifacts();$('download').disabled=false;$('profile-download').disabled=false;$('result').textContent='בחרו עיצוב והשלימו את הפרטים כדי להוריד.';preview();}).catch(function(){ $('result').textContent='לא ניתן לטעון את הטולקיט. בדקו את החיבור ורעננו את העמוד.'; });
 })();

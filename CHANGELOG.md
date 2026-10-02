@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.4.0
+
+- Add a shared 12-preset gallery and guided color, radius and font controls.
+- Add per-language banner/action copy editing, reset, button shape/size and text-size controls to both download flows.
+- Preserve customization in exported runtime and saved guided projects, with legacy project support and contrast checks.
+- Explain all 13 toolkit templates and distinguish installed components from implementation prompts.
+- Verify plain-text escaping, presets, sizing, saved-state compatibility and browser regressions.
+
+
 ## 2.1.0 — 2026-10-02
 
 - Enforce GPC on restored marketing consent and make Do Not Sell or Share disable marketing directly.

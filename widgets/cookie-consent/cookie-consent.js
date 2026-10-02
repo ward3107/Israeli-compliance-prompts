@@ -213,6 +213,15 @@
 
       var lang = resolveLanguage(cfg.language);
       this._t = Object.assign({}, I18N[lang]);
+      // Copy overrides are plain text, scoped to the active language. Keep
+      // direction, categories and privacy-signal notices outside this API.
+      var copy = cfg.textOverrides && cfg.textOverrides[lang];
+      if (copy && typeof copy === 'object') {
+        ['title', 'body', 'acceptAll', 'rejectAll', 'customize', 'save', 'privacy'].forEach(function (key) {
+          var value = copy[key], limit = key === 'body' ? 1000 : key === 'title' ? 160 : 60;
+          if (typeof value === 'string' && value.trim() && value.length <= limit) this._t[key] = value.trim();
+        }, this);
+      }
       var descriptions = cfg.categoryDescriptions && cfg.categoryDescriptions[lang];
       if (descriptions) {
         ['necessary', 'analytics', 'marketing'].forEach(function (category) {
