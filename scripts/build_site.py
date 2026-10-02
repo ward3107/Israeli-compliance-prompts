@@ -35,9 +35,9 @@ def build(output):
         raise ValueError("Invalid packs: " + "; ".join(errors))
     templates = ROOT / "skills" / "web-compliance" / "templates"
     files = {}
-    for directory in ("skills/web-compliance", "widgets", "schemas", "scripts", "examples", "docs", "tests", ".github", ".claude-plugin"):
+    for directory in ("skills/web-compliance", "widgets", "schemas", "scripts", "examples", "docs", "tests", "integrations", ".github", ".claude-plugin"):
         for source in (ROOT / directory).rglob("*"):
-            if source.is_file() and source.suffix in (".md", ".yaml", ".yml", ".json", ".js", ".cjs", ".css", ".py", ".html"):
+            if source.is_file() and source.suffix in (".md", ".yaml", ".yml", ".json", ".js", ".cjs", ".css", ".py", ".php", ".html"):
                 files[source.relative_to(ROOT).as_posix()] = source.read_text(encoding="utf-8")
     for name in ("LICENSE", "requirements.txt", "README.md", "README.he.md", "package.json", "package-lock.json", ".gitignore", ".gitattributes", "CHANGELOG.md"):
         files[name] = (ROOT / name).read_text(encoding="utf-8")

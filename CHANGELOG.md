@@ -21,3 +21,10 @@ Integration changes: opt-in initialization now calls onChange with denied consen
 - Local ZIP export with themed runnable banner, profile, scope-gated drafts, inherited sources, conflicts and complete toolkit source.
 - Required business facts and explicit tracking-tool selections; no business details uploaded.
 - Cross-browser download/extraction/runtime/regeneration tests and separate preview consent storage.
+
+## 2.3.0
+
+- Guided four-step client setup with unknown answers, validation and save/resume.
+- Uploadable WordPress plugin with private review data excluded, administrator controls and persistent cookie preferences.
+- Printable legal-review packet and lawyer guidance throughout delivery; partner and pricing remain unconfigured.
+- Real WordPress upload/activation tests plus three-engine guided-flow/download tests.

@@ -352,3 +352,7 @@ serve `generated/site` with a local static server.
 ## Client customizer
 
 [Customize and download](https://ward3107.github.io/web-compliance-prompts/builder.html) a themed banner, reusable project profile, selected draft prompts and full source toolkit as a ZIP. See [customizer documentation](docs/CUSTOMIZER.md) for package contents, installation and verification.
+
+## Guided client setup
+
+[Start the guided flow](https://ward3107.github.io/web-compliance-prompts/start.html) for a short questionnaire, themed WordPress plugin and separate legal-review packet. See [scope and verification](docs/GUIDED-SETUP.md). Site scanning, billing and lawyer booking are not active.
