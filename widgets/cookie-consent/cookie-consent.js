@@ -345,6 +345,13 @@
         if (e.key === 'Escape') { self._collapsePanelIfOpen(); }
       });
 
+      // Keep keyboard targets visible in a scrollable, short-screen panel.
+      root.addEventListener('focusin', function (e) {
+        if (e.target && typeof e.target.scrollIntoView === 'function') {
+          e.target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+      });
+
       // Focus the first action for keyboard users.
       var firstBtn = root.querySelector('.cc-btn');
       if (firstBtn) firstBtn.focus();

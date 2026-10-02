@@ -148,6 +148,11 @@ async function main() {
             assert.deepEqual(audit.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.failureSummary) })), [], 'automated accessibility checks');
             const save = page.locator('.cc-save');
             await save.focus();
+            // Firefox may paint the focus-triggered scroll on the next frame.
+            await page.waitForFunction(() => {
+              const box = document.querySelector('.cc-save').getBoundingClientRect();
+              return box.top >= 0 && box.bottom <= innerHeight + 1;
+            }, null, { timeout: 2000 });
             const box = await save.boundingBox();
             assert.ok(box.y >= 0 && box.y + box.height <= 568 + 1, 'save button remains reachable in short viewport');
             await page.screenshot({ path: path.join(out, `${name}-${language}-mobile.png`) });
