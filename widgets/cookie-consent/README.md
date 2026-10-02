@@ -146,3 +146,10 @@ respects bottom safe-area padding.
 Run `npm ci --ignore-scripts`, `npx playwright install chromium firefox webkit`
 and `npm run test:browser` for the real-browser suite. It includes automated axe
 checks and synthetic tracker requests; verify the real integration separately.
+# Customizer and isolated previews
+
+The public `builder.html` lets clients preview and download a themed copy, selected draft prompts and the full source toolkit. Load `theme.css` after the canonical widget stylesheet. The generated installation dispatches `compliance:consent`; site-specific integrations must use the category values to gate actual tracking requests.
+
+`storageKey` optionally sets a separate consent record (default: `cc_consent_v1`). The customizer iframe uses `cc_customizer_preview`, so preview choices never overwrite the main demo's choices.
+
+`autoFocus: false` disables automatic initial/return focus for embedded live previews. Default installations keep the existing keyboard focus behavior. Interactive category controls remain keyboard accessible in previews.

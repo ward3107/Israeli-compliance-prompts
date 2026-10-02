@@ -348,3 +348,7 @@ The static demo is built from the canonical widget files and published by the
 `pages` workflow to GitHub Pages. It loads no analytics, advertising tools,
 external fonts or third-party scripts. To preview locally, build the site then
 serve `generated/site` with a local static server.
+
+## Client customizer
+
+[Customize and download](https://ward3107.github.io/web-compliance-prompts/builder.html) a themed banner, reusable project profile, selected draft prompts and full source toolkit as a ZIP. See [customizer documentation](docs/CUSTOMIZER.md) for package contents, installation and verification.
