@@ -357,4 +357,3 @@ Show the 3-line GTM head snippet placement separately.
 - Click Reject All. Only Necessary = true in localStorage. All 4 GTM signals = 'denied'.
 - Tab through with keyboard only. All 3 toggles and all 3 buttons focusable with visible focus ring.
 - Open the banner in one Blink browser (Chrome/Samsung Internet), one WebKit (Safari/any iOS browser) and Firefox. Buttons, toggles and RTL layout look correct in all three.
-

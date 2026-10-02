@@ -136,7 +136,7 @@ Not legal advice. This is a draft for review, not a compliance guarantee.
 
 {filled}
 """
-    return prompt, manifest
+    return prompt.rstrip() + "\n", manifest
 
 
 def main():
