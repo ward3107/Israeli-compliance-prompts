@@ -1,5 +1,7 @@
 # Web Compliance Prompts
 
+[Try the live demo](https://ward3107.github.io/web-compliance-prompts/) · [עברית — התחלה מהירה](README.he.md) · [Reusable project profiles](#reusable-project-profiles)
+
 AI coding prompts for **website legal compliance**, composed against
 per-jurisdiction rule packs. Pick what you're building and which markets the
 site serves; the skill assembles a filled-in prompt you paste into Cursor,
@@ -78,7 +80,7 @@ templates, on a sample Hebrew RTL business site.
 ```
 skills/web-compliance/
   SKILL.md              # composes template × jurisdiction(s)
-  templates/            # WHAT to build — jurisdiction-neutral (13 artifacts)
+  templates/            # WHAT to build — 13 artifacts with explicit drafting scope
   jurisdictions/        # WHICH rules apply — cited, dated, machine-readable
     il.yaml             # Israel
     eu.yaml             # EU / EEA
@@ -92,7 +94,9 @@ scripts/validate.py     # structural checks, run in CI
 docs/screenshots/
 ```
 
-Templates and jurisdictions are deliberately separate. One `cookie-banner`
+Templates and jurisdictions are deliberately separate. Drafting scope still
+varies: several legacy legal-document templates contain Israel-specific wording
+and are not universal. The generator enforces that limit. One `cookie-banner`
 template serves Israel, the EU and California without being forked — the pack
 supplies the rules, the template supplies the build.
 
@@ -145,7 +149,7 @@ practical litigation benchmark, not a statutory mandate.
 
 Planned: more US states, Brazil (LGPD).
 
-**What this structure gets right that a flat prompt set gets wrong:**
+**Design goals and known limits:**
 
 - **The cookie banner comes from ePrivacy / PECR, not the GDPR.** GDPR defines
   what valid consent *is*; ePrivacy Art. 5(3) (EU) and PECR Reg. 6 (UK) are what
@@ -244,6 +248,7 @@ resolving them.
 Run the checks before opening a PR:
 
 ```bash
+python3 -m pip install -r requirements.txt
 python3 scripts/validate.py
 ```
 
@@ -269,3 +274,77 @@ python3 scripts/validate.py --strict-stale 180
 ---
 
 <p align="right"><a href="#web-compliance-prompts">⬆ Back to top</a></p>
+
+## Reusable project profiles
+
+Install Python 3.12+ dependencies with `python -m pip install -r requirements.txt`.
+Copy one of the synthetic [example profiles](examples/profiles/) to
+`project-profile.json` and replace its business details with verified facts.
+That filename is gitignored; other filenames are your responsibility.
+
+```bash
+python scripts/generate.py --list
+python scripts/generate.py --describe cookie-banner
+python scripts/generate.py --profile project-profile.json --artifact cookie-banner --output generated/cookie-banner.md --manifest generated/cookie-banner.manifest.json
+```
+
+The composer combines the template with the selected cited packs, automatically
+loads inherited packs, and includes source hashes, review dates, conflicts,
+assumptions and missing fields in a manifest. It does not independently verify
+legal applicability or rewrite every statutory statement. Unknown markets fail;
+there is no silent substitution with a nearby market. Missing facts fail unless
+`--allow-missing` explicitly requests an incomplete draft. Use `--date YYYY-MM-DD`
+for reproducible output; `artifacts` in the profile provides per-artifact variable
+overrides without changing the shared facts.
+
+**Current drafting scope:** `cookie-banner`, `accessibility-baseline` and
+`accessibility-widget` accept all shipped packs. Privacy policy, terms, refunds,
+disclaimer, checkout, freelancer contract, email marketing, accessibility
+statement and onboarding contain Israel-specific drafts; the generator restricts
+those to `il`. `data-subject-rights` is an overlay requiring both `il` and `eu`.
+Translation does not expand legal coverage. Additional markets need reviewed local
+templates before these scope restrictions can be lifted.
+
+| Scenario | Reusable profile | Complete cookie-banner prompt |
+|---|---|---|
+| Israeli business, Hebrew / RTL | [Profile](examples/profiles/israel-he.json) | [Draft](docs/examples/israel-he-cookie-banner.md) |
+| EU shop, English | [Profile](examples/profiles/eu-shop-en.json) | [Draft](docs/examples/eu-shop-en-cookie-banner.md) |
+| California site, English | [Profile](examples/profiles/california-en.json) | [Draft](docs/examples/california-en-cookie-banner.md) |
+
+All examples contain synthetic details. Regenerate with
+`python scripts/build_examples.py`; CI checks that examples match the current
+profiles, templates and packs. Advance `--date` and the recorded default when
+review dates change. Examples remain drafts with pending legal review.
+
+## Development and verification
+
+```bash
+python -m pip install -r requirements.txt
+python scripts/validate.py
+python -m unittest discover -s tests -p "test_*.py"
+python scripts/build_examples.py --check
+npm ci --ignore-scripts
+npm test
+npx playwright install chromium firefox webkit
+npm run test:browser
+python scripts/build_site.py
+```
+
+Pack validation uses safe YAML parsing and JSON Schema, validates every framework's
+own citation and types, detects duplicate keys/IDs, missing references and
+inheritance cycles, and rejects future review dates. `sources_checked_on` is an
+optional source-check date; a signed-off pack must have `reviewed_by` and
+`legal_reviewed_on`. A source check is not practitioner sign-off. No legal-review
+status or source review date was advanced by these engineering improvements.
+
+Real-browser checks run in Chromium, Firefox and WebKit, with keyboard, RTL,
+320px layouts, axe accessibility audits and synthetic local tracker requests.
+Reports and screenshots are uploaded by the `browser` workflow. These tests are
+not manual screen-reader certification or production GA4/Meta/GTM validation.
+Consent signals alone do not block tracking: verify your actual tags and requests
+on the deployed client site.
+
+The static demo is built from the canonical widget files and published by the
+`pages` workflow to GitHub Pages. It loads no analytics, advertising tools,
+external fonts or third-party scripts. To preview locally, build the site then
+serve `generated/site` with a local static server.

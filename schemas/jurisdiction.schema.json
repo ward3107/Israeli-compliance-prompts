@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Jurisdiction pack",
+  "type": "object",
+  "required": [
+    "jurisdiction",
+    "name",
+    "last_reviewed",
+    "needs_legal_review",
+    "frameworks",
+    "consent_model",
+    "rtl",
+    "languages"
+  ],
+  "properties": {
+    "jurisdiction": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewed_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 1
+    },
+    "extends": {
+      "type": "string",
+      "minLength": 1
+    },
+    "regulator": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope_warning": {
+      "type": "string",
+      "minLength": 1
+    },
+    "other_state_laws": {
+      "type": "string",
+      "minLength": 1
+    },
+    "last_reviewed": {
+      "type": "string",
+      "format": "date"
+    },
+    "needs_legal_review": {
+      "type": "boolean"
+    },
+    "rtl": {
+      "type": "boolean"
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "consent_model": {
+      "enum": [
+        "opt_in",
+        "opt_out"
+      ]
+    },
+    "small_claims_ceiling_ils": {
+      "type": "number",
+      "minimum": 0
+    },
+    "frameworks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "governs",
+          "citation",
+          "verified"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "citation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "short": {
+            "type": "string",
+            "minLength": 1
+          },
+          "amended_by": {
+            "type": "string",
+            "minLength": 1
+          },
+          "based_on": {
+            "type": "string",
+            "minLength": 1
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "needs_verification": {
+            "type": "string",
+            "minLength": 1
+          },
+          "maps_to": {},
+          "governs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "requires": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "effective": {
+            "type": "string",
+            "format": "date"
+          },
+          "consumer_rights": {},
+          "key_articles": {},
+          "key_provisions": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "with",
+          "issue"
+        ],
+        "properties": {
+          "with": {
+            "type": "string",
+            "minLength": 1
+          },
+          "issue": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "sources_checked_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "legal_reviewed_on": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "needs_legal_review": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reviewed_by",
+          "legal_reviewed_on"
+        ]
+      }
+    }
+  ]
+}

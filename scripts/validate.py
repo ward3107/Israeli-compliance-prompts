@@ -19,6 +19,8 @@ import pathlib
 import re
 import sys
 
+from packs import load_packs
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SKILL = ROOT / "skills" / "web-compliance"
 TEMPLATES = SKILL / "templates"
@@ -75,76 +77,10 @@ def check_templates() -> None:
 
 
 # ----------------------------------------------------------- jurisdictions
-def parse_scalar(line: str) -> tuple[str, str] | None:
-    """Parse a top-level `key: value` pair, stripping any trailing comment."""
-    m = re.match(r"^([a-z_]+):\s*(.*)$", line)
-    if not m:
-        return None
-    value = re.sub(r"\s+#.*$", "", m.group(2)).strip()
-    return m.group(1), value
-
-
 def check_jurisdictions() -> None:
-    files = sorted(JURISDICTIONS.glob("*.yaml"))
-    if not files:
-        err("no jurisdiction packs found in jurisdictions/")
-        return
-
-    today = datetime.date.today()
-    for f in files:
-        text = f.read_text(encoding="utf-8")
-        rel = f.relative_to(ROOT)
-        top = {}
-        for line in text.splitlines():
-            kv = parse_scalar(line)
-            if kv:
-                top.setdefault(kv[0], kv[1])
-
-        for key in ("jurisdiction", "name", "last_reviewed", "consent_model"):
-            if key not in top:
-                err(f"{rel}: missing required key '{key}'")
-
-        # Stale legal content is the main risk in a repo like this.
-        raw = top.get("last_reviewed", "")
-        if raw:
-            try:
-                reviewed = datetime.date.fromisoformat(raw)
-                age = (today - reviewed).days
-                if STRICT_STALE_DAYS is not None and age > STRICT_STALE_DAYS:
-                    err(
-                        f"{rel}: last_reviewed is {age} days old (over the "
-                        f"{STRICT_STALE_DAYS}-day freshness limit) — re-check the citations"
-                    )
-                elif age > STALE_AFTER_DAYS:
-                    warn(f"{rel}: last_reviewed is {age} days old — re-check the citations")
-            except ValueError:
-                err(f"{rel}: last_reviewed {raw!r} is not an ISO date (YYYY-MM-DD)")
-
-        cm = top.get("consent_model")
-        if cm and cm not in ("opt_in", "opt_out"):
-            err(f"{rel}: consent_model {cm!r} must be 'opt_in' or 'opt_out'")
-
-        # Every framework needs a citation; count blocks by their name: key.
-        names = re.findall(r"^\s*-\s+id:\s*(\S+)", text, re.M)
-        citations = re.findall(r"^\s*citation:\s*(\S+)", text, re.M)
-        if len(citations) < len(names):
-            err(
-                f"{rel}: {len(names)} frameworks but only {len(citations)} citations — "
-                "every framework must cite its source"
-            )
-
-        if "needs_legal_review: true" in text:
-            warn(f"{rel}: still flagged needs_legal_review — not yet signed off by a lawyer")
-
-        # Cross-references must point at packs that actually exist, or a
-        # composed prompt will silently miss a jurisdiction.
-        codes = {q.stem for q in JURISDICTIONS.glob("*.yaml")}
-        ext = top.get("extends")
-        if ext and ext not in codes:
-            err(f"{rel}: extends '{ext}' but no {ext}.yaml exists")
-        for ref in re.findall(r"^\s*-\s+with:\s*(\S+)", text, re.M):
-            if ref not in codes:
-                err(f"{rel}: conflicts with '{ref}' but no {ref}.yaml exists")
+    _, pack_errors, pack_warnings = load_packs(JURISDICTIONS, strict_stale=STRICT_STALE_DAYS)
+    errors.extend(pack_errors)
+    warnings.extend(pack_warnings)
 
 
 # ------------------------------------------------------------------ disclaimer
@@ -169,6 +105,8 @@ def main() -> int:
         help="Treat a pack whose last_reviewed is older than DAYS as an ERROR, not a warning.",
     )
     args = parser.parse_args()
+    if args.strict_stale is not None and args.strict_stale < 0:
+        parser.error("--strict-stale must be non-negative")
     STRICT_STALE_DAYS = args.strict_stale
 
     check_templates()

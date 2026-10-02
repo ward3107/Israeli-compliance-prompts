@@ -9,3 +9,10 @@ node_modules/
 
 # Env / secrets
 .env
+
+# Local build/test output and reusable profiles with private business details
+test-results/
+generated/
+project-profile.json
+__pycache__/
+*.pyc

@@ -1,0 +1,38 @@
+{
+  "profile_version": 1,
+  "name": "Example Israeli business",
+  "language": "he",
+  "jurisdictions": [
+    "il"
+  ],
+  "variables": {
+    "FRAMEWORK": "HTML/CSS/JavaScript",
+    "CONTACT_EMAIL": "privacy@example.com",
+    "BRAND_COLOR": "#145f78",
+    "GA4": "YES",
+    "GOOGLE_ADS": "NO",
+    "FB_PIXEL": "NO",
+    "MAILCHIMP": "NO",
+    "GTM_ID": "not using GTM",
+    "PRIVACY_POLICY_URL": "/privacy",
+    "BUSINESS_NAME": "Example business",
+    "BUSINESS_TYPE": "Local services",
+    "OWNER_NAME": "Example owner - replace before use",
+    "BUSINESS_ADDRESS": "Example address - replace before use",
+    "WEBSITE_URL": "https://example.com",
+    "HOSTING_PROVIDER": "Example host - replace before use",
+    "GTM": "NO",
+    "WHATSAPP": "NO",
+    "CONTACT_FORM": "YES",
+    "BG_COLOR": "#ffffff",
+    "TEXT_COLOR": "#183348",
+    "LINK_COLOR": "#145f78",
+    "BUTTON_COLOR": "#145f78",
+    "WEBSITE_NAME": "Example Israeli business",
+    "PRIMARY_LANGUAGE": "Hebrew"
+  },
+  "assumptions": [
+    "All business details are synthetic examples. Replace them with verified facts before use.",
+    "Analytics is configured for this example; actual applicability and processing require review."
+  ]
+}

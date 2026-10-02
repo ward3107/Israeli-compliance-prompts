@@ -1,0 +1,13 @@
+{
+  "name": "web-compliance-prompts",
+  "version": "2.1.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/cookie-consent.test.cjs",
+    "test:browser": "node scripts/test-browser.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "axe-core": "4.13.0"
+  }
+}

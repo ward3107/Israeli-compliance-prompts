@@ -116,3 +116,33 @@ Open [`demo.html`](demo.html) in a browser — pick a region and language, click
 Run `node --test tests/cookie-consent.test.cjs` from the repository root (Node.js 22 or later). The same tests run on pull requests. They exercise consent logic and DOM interactions using a small test double; they do not replace real-browser, screen-reader, or network-tracking checks.
 
 **Integration change:** `onChange` now receives the denied state on a first opt-in visit. Existing `dataLayer` integrations also receive the default denied signal without needing a `gtmId` option. Configure tags before loading them; a consent signal alone does not block third-party requests.
+
+## Actual tool descriptions and page language
+
+Default descriptions are generic: they do not assume GA4 or promise anonymity.
+Supply the actual tools, data and recipients in the chosen language:
+
+```js
+CookieConsent.init({
+  region: 'eu',
+  language: 'en',
+  categoryDescriptions: {
+    en: {
+      necessary: 'Session storage for sign-in; see our privacy policy.',
+      analytics: 'Our chosen analytics provider measures page views.',
+      marketing: 'Our advertising provider measures campaigns.'
+    }
+  }
+});
+```
+
+These are example descriptions, not facts about your business. Values are
+escaped before rendering. `language: 'auto'` prefers a supported page `lang`
+attribute, then the browser language. Explicit language configuration wins.
+When storage is blocked, reopening settings retains the current in-memory choice;
+a new visit requires another choice. The panel scrolls within short viewports and
+respects bottom safe-area padding.
+
+Run `npm ci --ignore-scripts`, `npx playwright install chromium firefox webkit`
+and `npm run test:browser` for the real-browser suite. It includes automated axe
+checks and synthetic tracker requests; verify the real integration separately.
