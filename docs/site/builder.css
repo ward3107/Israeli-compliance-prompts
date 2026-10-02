@@ -1,0 +1,30 @@
+.builder-heading { padding:48px 0 32px; max-width:76ch; }
+.builder-heading h1 { font-size:clamp(2rem,4vw,3.4rem); margin-bottom:16px; letter-spacing:0; }
+.studio { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:36px; align-items:start; }
+.controls { min-width:0; }
+fieldset { border:0; border-top:1px solid var(--line); padding:20px 0 28px; margin:0; min-width:0; }
+legend { font-size:1.25rem; font-weight:700; padding-inline-end:16px; }
+.controls label { display:block; font-size:.95rem; margin-bottom:14px; }
+.controls .check { display:flex; }
+.controls input:not([type=checkbox]):not([type=range]) { display:block; width:100%; min-height:46px; margin-top:6px; border:1px solid var(--line); border-radius:3px; padding:8px; background:white; color:var(--ink); }
+.controls input[type=color] { cursor:pointer; padding:4px; }
+.controls input[type=range] { display:block; width:100%; margin-top:16px; accent-color:var(--accent); }
+.controls .fields { margin:12px 0 0; }
+.presets { display:flex; gap:8px; flex-wrap:wrap; }
+.presets button { padding:8px 12px; min-height:44px; border:1px solid var(--line); background:white; color:var(--ink); cursor:pointer; border-radius:3px; }
+.presets button[aria-pressed=true] { border:2px solid var(--accent); background:var(--wash); }
+.preview-panel { position:sticky; top:20px; min-width:0; padding:24px; border:1px solid var(--line); background:white; }
+.preview-heading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:20px; }
+.preview-heading h2 { font-size:1.25rem; margin:0; }
+iframe { display:block; width:100%; height:540px; border:1px solid var(--line); background:var(--paper); margin:auto; }
+iframe.mobile { max-width:360px; }
+.package-note { font-size:.9rem; border-top:1px solid var(--line); }
+.artifact-option { display:flex; gap:10px; align-items:flex-start; margin:12px 0; }
+.artifact-option input { width:22px; height:22px; flex-shrink:0; accent-color:var(--accent); }
+.artifact-option label { margin:0; }
+.artifact-option small { display:block; color:var(--muted); }
+#contrast { padding:10px 14px; border-inline-start:3px solid var(--accent); background:var(--wash); }
+button:disabled { opacity:.6; cursor:wait; }
+#result { overflow-wrap:anywhere; }
+@media(max-width:900px) { .studio { grid-template-columns:1fr; } .preview-panel { position:static; grid-row:1; } }
+@media(max-width:480px) { .masthead,main,footer { width:calc(100% - 28px); } .preview-panel { padding:14px; } .controls .fields { grid-template-columns:1fr; } }

@@ -14,3 +14,10 @@
 - Correct the old Israeli email-marketing law reference and remove the unsupported ten-business-day assertion.
 
 Integration changes: opt-in initialization now calls onChange with denied consent; the UK exemption is disabled by default; source-validation scripts require requirements.txt dependencies. Translation does not expand the legal scope of legacy document templates. Legal review remains pending for all shipped packs.
+
+## 2.2.0
+
+- Client customizer with Hebrew UI, live isolated preview, responsive layouts, presets, colors, contrast guard, font, radius and placement.
+- Local ZIP export with themed runnable banner, profile, scope-gated drafts, inherited sources, conflicts and complete toolkit source.
+- Required business facts and explicit tracking-tool selections; no business details uploaded.
+- Cross-browser download/extraction/runtime/regeneration tests and separate preview consent storage.

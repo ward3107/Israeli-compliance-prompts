@@ -159,9 +159,9 @@
 
   // ---- storage -------------------------------------------------------------
 
-  function readStored(region) {
+  function readStored(region, storageKey) {
     try {
-      var raw = global.localStorage.getItem(STORAGE_KEY);
+      var raw = global.localStorage.getItem(storageKey || STORAGE_KEY);
       if (!raw) return null;
       var data = JSON.parse(raw);
       if (!data || data.version !== VERSION) return null;
@@ -175,12 +175,12 @@
     }
   }
 
-  function writeStored(consent, region, language) {
+  function writeStored(consent, region, language, storageKey) {
     try {
       var now = Date.now();
       var expires = new Date();
       expires.setMonth(expires.getMonth() + EXPIRY_MONTHS);
-      global.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      global.localStorage.setItem(storageKey || STORAGE_KEY, JSON.stringify({
         version: VERSION,
         analytics: !!consent.analytics,
         marketing: !!consent.marketing,
@@ -228,7 +228,7 @@
 
       var ukExempt = region === 'uk' && cfg.ukFirstPartyAnalyticsExempt === true;
 
-      var stored = readStored(region);
+      var stored = readStored(region, cfg.storageKey);
       if (stored) {
         // Returning visitor with a valid, unexpired choice — apply, no banner.
         this._apply({ analytics: stored.analytics, marketing: stored.marketing }, false);
@@ -255,7 +255,7 @@
       consent = { analytics: !!consent.analytics, marketing: !!consent.marketing && !this._gpc };
       this._consent = consent;
       if (this._cfg.gtmId || global.dataLayer) pushConsentUpdate(consent);
-      if (persist) writeStored(consent, this._cfg.region || 'auto', resolveLanguage(this._cfg.language));
+      if (persist) writeStored(consent, this._cfg.region || 'auto', resolveLanguage(this._cfg.language), this._cfg.storageKey);
       if (typeof this._cfg.onChange === 'function') {
         try { this._cfg.onChange({ analytics: !!consent.analytics, marketing: !!consent.marketing }); }
         catch (e) { /* consumer callback error — ignore */ }
@@ -354,7 +354,7 @@
 
       // Focus the first action for keyboard users.
       var firstBtn = root.querySelector('.cc-btn');
-      if (firstBtn) firstBtn.focus();
+      if (firstBtn && cfg.autoFocus !== false) firstBtn.focus();
     },
 
     _togglePanel: function (btn) {
@@ -380,7 +380,7 @@
     _destroy: function () {
       if (this._root && this._root.parentNode) this._root.parentNode.removeChild(this._root);
       this._root = null;
-      if (this._lastFocus && typeof this._lastFocus.focus === 'function') this._lastFocus.focus();
+      if ((!this._cfg || this._cfg.autoFocus !== false) && this._lastFocus && typeof this._lastFocus.focus === 'function') this._lastFocus.focus();
     },
 
     // Re-open the banner (e.g. from a "Cookie settings" footer link).

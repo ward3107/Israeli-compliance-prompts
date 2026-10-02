@@ -4,6 +4,18 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const source = fs.readFileSync('widgets/cookie-consent/cookie-consent.js', 'utf8');
 
+test('custom preview storage never reads or writes the production consent record', () => {
+  const h = setup();
+  const records = new Map([['cc_consent_v1', choice(true, true)]]);
+  h.window.localStorage.getItem = key => records.get(key) || null;
+  h.window.localStorage.setItem = (key, value) => records.set(key, value);
+  h.widget.init({ ...h.config, region: 'eu', storageKey: 'cc_customizer_preview' });
+  assert.equal(h.changes.at(-1).marketing, false);
+  h.click('reject');
+  assert.equal(JSON.parse(records.get('cc_customizer_preview')).marketing, false);
+  assert.equal(JSON.parse(records.get('cc_consent_v1')).marketing, true);
+});
+
 // Exercise the shipped script and its click handlers without external dependencies.
 function setup({ gpc = false, stored, blocked = false, language = 'en' } = {}) {
   const changes = [];

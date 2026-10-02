@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>התאמת הטולקיט לאתר שלכם</title>
+  <link rel="stylesheet" href="site.css"><link rel="stylesheet" href="builder.css">
+</head>
+<body>
+  <a class="skip" href="#main">דלגו לתוכן</a>
+  <header class="masthead"><a class="wordmark" href="./">Web Compliance Prompts</a><nav aria-label="ניווט"><a href="./">דמו ודוגמאות</a><a href="https://github.com/ward3107/web-compliance-prompts/blob/main/README.he.md">מדריך בעברית</a></nav></header>
+  <main id="main">
+    <div class="builder-heading"><h1>הטולקיט, בעיצוב שלכם.</h1><p>בחרו עיצוב, הוסיפו פרטי עסק והורידו חבילה לאתר שלכם. הפרטים נשארים בדפדפן ואינם נשלחים לשרת.</p></div>
+    <div class="studio">
+      <form id="builder" class="controls">
+        <fieldset><legend>עיצוב</legend>
+          <div class="presets" role="group" aria-label="עיצובים מוכנים"><button type="button" data-preset="ocean">כחול ים</button><button type="button" data-preset="forest">ירוק יער</button><button type="button" data-preset="night">לילה</button></div>
+          <div class="fields"><label>צבע כפתורים<input id="brand" type="color" value="#145f78"></label><label>רקע הבאנר<input id="background" type="color" value="#ffffff"></label><label>צבע טקסט<input id="foreground" type="color" value="#183348"></label><label>עיגול פינות <output id="radius-value">12</output><input id="radius" type="range" min="0" max="28" value="12"></label></div>
+          <div class="fields"><label>גופן<select id="font"><option value="system">גופן המערכת</option><option value="inherit">גופן האתר שלכם</option><option value="serif">Serif</option></select></label><label>מיקום<select id="position"><option value="bottom">בתחתית</option><option value="top">בחלק העליון</option><option value="corner">בפינה</option></select></label></div>
+          <p id="contrast" role="status"></p>
+        </fieldset>
+        <fieldset><legend>האתר והקהל</legend>
+          <div class="fields"><label>שפת הבאנר והמסמכים<select id="language"><option value="he">עברית</option><option value="ar">العربية</option><option value="en">English</option><option value="ru">Русский</option></select></label><label>אזור המבקרים<select id="region"><option value="il">ישראל</option><option value="eu">האיחוד האירופי</option><option value="uk">בריטניה</option><option value="us-ca">קליפורניה</option><option value="us">ארה״ב — שכבה פדרלית</option><option value="ca">קנדה</option><option value="il+eu">ישראל והאיחוד האירופי</option></select></label></div>
+          <label>שם העסק<input id="business" required maxlength="200" autocomplete="organization" placeholder="שם העסק שלכם"></label>
+          <div class="fields"><label>כתובת האתר<input id="website" required type="url" placeholder="https://example.com" dir="ltr"></label><label>אימייל לפניות פרטיות<input id="email" required type="email" autocomplete="email" dir="ltr"></label></div>
+          <label>קישור למדיניות פרטיות<input id="privacy" required value="/privacy" dir="ltr"></label>
+          <label>סביבת האתר<select id="framework"><option>HTML/CSS/JavaScript</option><option>React</option><option>Next.js</option><option>WordPress</option><option>Other</option></select></label>
+        </fieldset>
+        <fieldset><legend>מה תרצו בחבילה?</legend><p>באנר העוגיות מוכן להתקנה. שאר הפריטים הם פרומפטים ליצירת רכיבים ומסמכים; צריך ליישם ולבדוק אותם באתר.</p><div id="artifacts"></div></fieldset>
+        <fieldset><legend>פרטים להשלמת התבניות</legend><p>השתמשו רק בפרטים אמיתיים. בחרו ״לא״ עבור כלים שאינם מותקנים באתר. שינוי הפריטים בחבילה מעדכן את השדות.</p><div id="facts"></div></fieldset>
+        <label class="check"><input id="review" type="checkbox" required> ברור לי שהמסמכים הם טיוטות לבדיקה ושהחיבור לכלי המעקב דורש יישום ובדיקה באתר.</label>
+        <div class="demo-actions"><button id="download" class="button" type="submit" disabled>הורדת החבילה ZIP</button><button id="profile-download" class="text-button" type="button" disabled>הורדת פרופיל בלבד</button></div>
+        <p id="result" role="status" aria-live="polite">טוענים את הטולקיט…</p>
+      </form>
+      <section class="preview-panel" aria-labelledby="preview-title">
+        <div class="preview-heading"><h2 id="preview-title">תצוגה מקדימה</h2><div class="presets" role="group" aria-label="גודל התצוגה"><button type="button" id="desktop" aria-pressed="true">מחשב</button><button type="button" id="mobile" aria-pressed="false">נייד</button></div></div>
+        <iframe id="preview" title="תצוגה מקדימה של הבאנר" src="preview.html" sandbox="allow-scripts allow-same-origin"></iframe>
+        <button id="reopen" class="text-button" type="button">פתיחת הבאנר מחדש</button>
+        <div class="package-note"><h3>מה תקבלו?</h3><p>באנר מוכן עם קובצי עיצוב והתקנה, פרופיל פרויקט, הפרומפטים שבחרתם עם מקורות, וכל קובצי הטולקיט המקוריים. קובץ ההתחלה בחבילה מסביר איך להתקין באתר.</p><p>הדמו אינו טוען כלי מעקב. גם בחבילה, כלי מעקב אינם מופעלים אוטומטית.</p></div>
+      </section>
+    </div>
+  </main>
+  <footer><span>Web Compliance Prompts</span><a href="privacy.html">פרטיות הדמו</a></footer>
+  <script src="zip.js"></script><script src="builder.js"></script>
+</body></html>
