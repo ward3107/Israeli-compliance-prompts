@@ -19,9 +19,12 @@
     Object.keys(presets).forEach(function(key){
       var preset=presets[key],button=document.createElement('button'),swatches=document.createElement('span');
       button.type='button';button.setAttribute(attribute,key);button.setAttribute('aria-pressed',String(key==='ocean'));
+      button.style.setProperty('--sample-brand',preset.colors[0]);button.style.setProperty('--sample-bg',preset.colors[1]);button.style.setProperty('--sample-fg',preset.colors[2]);button.style.setProperty('--sample-radius',Math.min(preset.radius,18)+'px');
+      var sample=document.createElement('span');sample.className='theme-sample';sample.setAttribute('aria-hidden','true');
+      sample.innerHTML='<span class="sample-banner"><span class="sample-heading">הפרטיות שלכם.</span><span class="sample-line"></span><span class="sample-line short"></span><span class="sample-actions"><i></i><i></i></span></span>';
       swatches.className='theme-swatches';swatches.setAttribute('aria-hidden','true');
       preset.colors.forEach(function(color){var dot=document.createElement('i');dot.style.backgroundColor=color;swatches.append(dot);});
-      button.append(swatches,document.createTextNode(preset.name));
+      var caption=document.createElement('span');caption.className='theme-caption';caption.append(document.createTextNode(preset.name),swatches);button.append(sample,caption);
       button.addEventListener('click',function(){container.querySelectorAll('button').forEach(function(el){el.setAttribute('aria-pressed',String(el===button));});onSelect(key,preset);});
       container.append(button);
     });

@@ -52,3 +52,4 @@ footer { display:flex; justify-content:space-between; gap:20px; padding:28px 0; 
 @media(max-width:900px) { .intro { gap:30px; } .fields { grid-template-columns:1fr; } .workbench { padding:24px; } }
 @media(max-width:680px) { .masthead,main,footer { width:calc(100% - 32px); } .masthead { align-items:flex-start; flex-direction:column; } nav { gap:18px; } .intro { grid-template-columns:1fr; padding:40px 0; } .fields { grid-template-columns:1fr; } .steps,.example-list { grid-template-columns:1fr; gap:16px; } .example-list { gap:0; } .example-list article+article { border-inline-start:0; border-top:1px solid var(--line); } .start,#examples,.verification { padding:36px 0; } footer { flex-direction:column; } }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+.skip:not(:focus){clip-path:inset(50%);width:1px;height:1px;padding:0;overflow:hidden}
