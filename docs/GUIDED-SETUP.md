@@ -7,6 +7,7 @@ The [guided flow](https://ward3107.github.io/web-compliance-prompts/start.html) 
 - Language-specific title, body and action-label editing with reset to original copy. Straight, rounded or pill buttons; three button sizes with at least 44px height; four text sizes. Overrides are escaped plain text and travel with downloads, saved projects and legal-review packets.
 - Twelve shared design presets, custom background/text/button colors, corner radius, font and placement. Text contrast is checked before installation export; saved projects from the original three-preset release still load.
 - An expandable toolkit overview distinguishes the installable banner from the other 12 prompts and implementation templates.
+- Editable Hebrew drafts for Israel-only projects: privacy, terms and (unless sales is explicitly no) refunds. Missing facts remain marked. Exports include HTML for printing/PDF and TXT plus an unreviewed manifest. Drafts join the lawyer packet, never the installable plugin. Changing facts blocks standalone document export until explicit regeneration; stale drafts in lawyer packets are marked. Unsupported markets omit documents from the lawyer packet, while saved projects retain the work.
 - Four steps: site details, business questions, banner design, installation and legal review.
 - Unknown answers remain unknown in the review packet. A missing privacy-policy URL or unknown target market prevents installation export, while still allowing a legal-review packet.
 - The WordPress download contains a real uploadable plugin with canonical consent code, selected styles, a persistent preferences button, an administrator-only enable/disable setting and legal-review guidance. Other platforms receive a package for an installer.
@@ -23,7 +24,7 @@ No automatic policy pages are created in WordPress. The uploadable ZIP uses the 
 
 ## Verification
 
-Build with `python scripts/build_site.py`, then run `node scripts/test-guided.cjs` for Chromium, Firefox and WebKit. It tests step validation, unknown answers, blocked incomplete exports, unsafe URLs, actual ZIP downloads and CRCs, HTML escaping, privacy of plugin contents, save/resume, malformed imports, accessibility and mobile overflow. Reports are under `test-results/`.
+Build with `python scripts/build_site.py`, then run `node scripts/test-guided.cjs` for Chromium, Firefox and WebKit. It tests step validation, unknown answers, blocked incomplete exports, unsafe URLs, actual ZIP downloads and CRCs, HTML escaping, privacy of plugin contents, save/resume, malformed imports, accessibility and mobile overflow. Run `node scripts/test-documents.cjs` for draft editing, downloads, saved work, stale-state and jurisdiction gates. Reports are under `test-results/`.
 
 For an actual WordPress installation test, use the disposable Compose project only:
 

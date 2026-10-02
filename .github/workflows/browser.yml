@@ -25,6 +25,8 @@ jobs:
         run: node scripts/test-builder.cjs
       - name: Test guided setup and private review packages
         run: node scripts/test-guided.cjs
+      - name: Test generated legal drafts and handoff packages
+        run: node scripts/test-documents.cjs
       - name: Start disposable WordPress QA
         run: docker compose -p wct-guided-qa -f tests/wordpress.compose.yml up -d --wait
       - name: Initialize disposable WordPress

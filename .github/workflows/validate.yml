@@ -26,4 +26,4 @@ jobs:
         with:
           node-version: "22"
       - name: Test cookie consent behavior
-        run: node --test tests/cookie-consent.test.cjs
+        run: node --test tests/cookie-consent.test.cjs tests/documents.test.cjs
