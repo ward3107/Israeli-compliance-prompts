@@ -51,6 +51,7 @@
     var bg=$('background').value, fg=$('foreground').value, brand=$('brand').value, r=Number($('radius').value), position=$('position').value;
     return '.cc-root { --cc-brand:'+brand+'; --cc-bg:'+bg+'; --cc-fg:'+fg+'; --cc-muted:'+fg+'; --cc-border:'+fg+'; --cc-radius:'+r+'px; font-family:'+fonts[$('font').value]+'; }\n'+
       '.cc-root .cc-btn-primary { color:'+buttonText()+'; }\n'+
+      '.cc-root button, .cc-root input { font-family:inherit; }\n'+
       '.cc-root a { color:'+fg+'; }\n.cc-root :focus-visible { outline-color:'+fg+'; }\n'+
       '.cc-root .cc-btn { border-radius:'+Math.min(r,16)+'px; }\n'+
       (position==='top'?'.cc-root { top:0; bottom:auto; } .cc-root .cc-banner { border-bottom:1px solid var(--cc-border); border-radius:0 0 '+r+'px '+r+'px; }\n':
