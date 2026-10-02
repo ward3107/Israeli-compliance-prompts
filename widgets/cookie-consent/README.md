@@ -153,3 +153,17 @@ The public `builder.html` lets clients preview and download a themed copy, selec
 `storageKey` optionally sets a separate consent record (default: `cc_consent_v1`). The customizer iframe uses `cc_customizer_preview`, so preview choices never overwrite the main demo's choices.
 
 `autoFocus: false` disables automatic initial/return focus for embedded live previews. Default installations keep the existing keyboard focus behavior. Interactive category controls remain keyboard accessible in previews.
+
+
+### Custom banner copy
+
+`textOverrides` accepts plain-text overrides keyed by language (`he`, `en`, `ar`, `ru`). The supported fields are `title` (160 characters), `body` (1000), and `acceptAll`, `rejectAll`, `customize`, `save`, `privacy` (60 each). Empty or invalid overrides fall back to the original translation. HTML is escaped. Category meanings, direction and privacy-signal notices are not overridden. Copy changes do not change the actions performed by the buttons.
+
+```js
+CookieConsent.init({
+  language: 'en', region: 'auto', privacyPolicyUrl: '/privacy',
+  textOverrides: { en: { title: 'Your privacy choices', acceptAll: 'Accept all cookies' } }
+});
+```
+
+The guided and advanced download pages include this editor, 12 design presets, custom colors/fonts, three button shapes, three button sizes and four body-text sizes. Adapted copy requires review against actual site behavior; changing a label does not establish legal compliance.

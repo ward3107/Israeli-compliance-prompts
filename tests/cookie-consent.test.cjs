@@ -4,6 +4,30 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const source = fs.readFileSync('widgets/cookie-consent/cookie-consent.js', 'utf8');
 
+test('custom copy is escaped, language scoped and keeps rejection behavior', () => {
+  const h = setup();
+  const textOverrides = { en: { title: '<b>Your choice</b>', rejectAll: 'Only essentials' }, he: { title: 'בחירה' } };
+  h.widget.init({ ...h.config, region: 'eu', textOverrides });
+  assert.match(h.roots[0].innerHTML, /&lt;b&gt;Your choice&lt;\/b&gt;/);
+  assert.match(h.roots[0].innerHTML, /Only essentials/);
+  h.click('reject');
+  assert.equal(h.saved().analytics, false);
+  assert.equal(h.saved().marketing, false);
+  h.widget.init({ ...h.config, region: 'eu', language: 'he', textOverrides });h.widget.show();
+  assert.equal(h.roots[0].attrs['aria-label'], 'בחירה');
+  assert.doesNotMatch(h.roots[0].innerHTML, /Only essentials/);
+});
+
+test('blank, oversized and structural text overrides keep original translations', () => {
+  const h = setup();
+  h.widget.init({ ...h.config, region: 'eu', textOverrides: { en: { title: ' ', body: 'x'.repeat(1001), acceptAll: 7, rejectAll: '', dir: 'rtl', gpcNotice: 'hidden' } } });
+  assert.equal(h.roots[0].attrs.dir, 'ltr');
+  assert.equal(h.roots[0].attrs['aria-label'], 'We value your privacy');
+  assert.match(h.roots[0].innerHTML, /Reject all/);
+  assert.match(h.roots[0].innerHTML, /Accept all/);
+  assert.doesNotMatch(h.roots[0].innerHTML, /x{1001}/);
+});
+
 test('custom preview storage never reads or writes the production consent record', () => {
   const h = setup();
   const records = new Map([['cc_consent_v1', choice(true, true)]]);
