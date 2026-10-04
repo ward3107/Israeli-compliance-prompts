@@ -14,7 +14,10 @@ def check(directory):
         if data.get('version') != '2.1.0' or not data.get('runs'):
             raise ValueError('Incomplete SARIF report: ' + path.name)
         for run in data['runs']:
-            rules = {rule['id']: rule for rule in run['tool']['driver']['rules']}
+            # CodeQL query packs can put rule metadata in tool extensions,
+            # not only the driver (SARIF 2.1 reportingDescriptor references).
+            components = [run['tool']['driver'], *run['tool'].get('extensions', [])]
+            rules = {rule['id']: rule for component in components for rule in component.get('rules', [])}
             if not isinstance(run.get('results'), list):
                 raise ValueError('Missing analysis results: ' + path.name)
             for result in run['results']:
@@ -23,7 +26,11 @@ def check(directory):
                 severity = float(properties.get('security-severity', 0))
                 level = result.get('level', rule.get('defaultConfiguration', {}).get('level', 'warning'))
                 if severity >= 7 or level == 'error':
-                    findings.append(path.name + ': ' + result['ruleId'])
+                    locations = result.get('locations', [])
+                    physical = locations[0].get('physicalLocation', {}) if locations else {}
+                    location = physical.get('artifactLocation', {}).get('uri', 'unknown')
+                    line = physical.get('region', {}).get('startLine', '?')
+                    findings.append(path.name + ': ' + result['ruleId'] + ' at ' + location + ':' + str(line))
     if findings:
         raise ValueError('Security findings block publication: ' + '; '.join(findings))
 

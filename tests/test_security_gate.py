@@ -34,3 +34,12 @@ class SecurityGateTests(unittest.TestCase):
                     data['runs'][0]['results'] = []
                 Path(directory, 'scan.sarif').write_text(json.dumps(data))
                 check(directory)
+
+    def test_query_pack_extension_rules_are_enforced(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data = self.report('8.0')
+            tool = data['runs'][0]['tool']
+            tool['extensions'] = [{'rules': tool['driver'].pop('rules')}]
+            Path(directory, 'scan.sarif').write_text(json.dumps(data))
+            with self.assertRaisesRegex(ValueError, 'test/rule'):
+                check(directory)
