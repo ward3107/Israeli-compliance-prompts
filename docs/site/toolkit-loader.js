@@ -5,7 +5,7 @@
   var pending;
   host.ToolkitSource = {
     load: function () {
-      if (!pending) pending = fetch('toolkit.json').then(function (response) {
+      if (!pending) pending = fetch('toolkit.json', {cache:'no-cache'}).then(function (response) {
         if (!response.ok) throw new Error('Toolkit unavailable');
         return response.json();
       });

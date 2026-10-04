@@ -70,7 +70,7 @@ def build(output):
     expected_output = set(site_files) | {'.nojekyll', 'toolkit.json', 'web-compliance-studio.zip', 'web-compliance-mcp.zip', 'SHA256SUMS.txt'}
     if any(p.is_file() and p.relative_to(output).as_posix() not in expected_output for p in output.rglob('*')):
         raise ValueError('Unexpected existing output file; use an empty dedicated directory')
-    asset_version = hashlib.sha256(json.dumps(site_files, sort_keys=True).encode()).hexdigest()[:16]
+    asset_version = hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()[:16]
     for name, text in site_files.items():
         destination = output / name
         destination.parent.mkdir(parents=True, exist_ok=True)
