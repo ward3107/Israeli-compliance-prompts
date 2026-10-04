@@ -27,6 +27,7 @@ async function main(){
       if(offline)await context.route(/^https?:/,route=>route.abort());
       await page.goto(offline?pathToFileURL(path.join(out,'studio/START-HERE.html')).href:base+'/explore.html');
       await page.waitForFunction(()=>document.querySelectorAll('#catalog-items details').length===13);
+      assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(242, 247, 250)');
       assert.equal(await page.locator('#document-examples details').count(),3);
       assert.equal(await page.locator('input').count(),0,'Discovery must not require business details');
       await page.locator('[data-explore-theme=forest]').click();await page.locator('#preview-language').selectOption('en');

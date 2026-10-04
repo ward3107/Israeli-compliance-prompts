@@ -4,6 +4,7 @@ import argparse
 import json
 import hashlib
 import zipfile
+import re
 from pathlib import Path
 from generate import required_variables, ISRAEL_DRAFTS, EU_OVERLAY, FLAG_KEYS
 from packs import load_packs
@@ -77,6 +78,11 @@ def build(output):
     for name in offline:
         if name.endswith('.html'):
             offline[name] = offline[name].replace("frame-src 'self'", 'frame-src file:')
+            # Safari/WebKit restrict CSSOM access across local file origins.
+            # Embed canonical local styles in portable pages, without allowing
+            # remote resources or relaxing the script policy.
+            offline[name] = re.sub(r'<link rel="stylesheet" href="([^"/]+\.css)">',
+                lambda match: '<style>' + site_files[match.group(1)] + '</style>', offline[name])
     offline['toolkit-loader.js'] = 'window.ToolkitSource={load:function(){return Promise.resolve(' + payload.replace('<', '\\u003c').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029') + ');}};\n'
     offline['START-HERE.html'] = offline['explore.html']
     offline['LICENSE'] = files['LICENSE']
