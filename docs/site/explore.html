@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ראו את הבאנר, העיצובים, טיוטות המסמכים וכל 13 התבניות לפני ההתקנה. ללא חשבון, ללא מסוף וללא מסירת פרטים.">
+  <title>קודם רואים. אחר כך מתקינים — Web Compliance</title>
+  <link rel="stylesheet" href="site.css"><link rel="stylesheet" href="themes.css"><link rel="stylesheet" href="explore.css">
+</head>
+<body>
+  <a class="skip" href="#main">דלגו לתוכן</a>
+  <header class="masthead"><a class="wordmark" href="./" dir="ltr">Web Compliance</a><nav aria-label="ניווט"><a href="#catalog">כל התכולה</a><a href="#install">איך מתקינים?</a><a href="start.html">הכנת חבילה לאתר</a></nav></header>
+  <main id="main">
+    <section class="explore-intro"><p class="edition">התנסות פתוחה · ללא חשבון · ללא מסירת פרטים</p><h1>קודם רואים.<br>אחר כך מתקינים.</h1><p class="lead">נסו את הבאנר, בחרו עיצוב ופתחו את המסמכים והתבניות. כשתהיו מוכנים, נכין לכם חבילה דרך הדפדפן.</p><a class="button" id="start-link" href="start.html">מתאים לי — להכנת החבילה</a></section>
+    <section aria-labelledby="banner-title" class="preview-workspace">
+      <div class="preview-controls"><h2 id="banner-title">כך זה נראה באתר</h2><label for="preview-language">שפת הבאנר</label><select id="preview-language"><option value="he">עברית</option><option value="ar">العربية</option><option value="en">English</option><option value="ru">Русский</option></select><div class="demo-actions" role="group" aria-label="גודל התצוגה"><button id="wide" class="text-button" type="button" aria-pressed="true">מחשב</button><button id="narrow" class="text-button" type="button" aria-pressed="false">טלפון</button><button id="reopen" class="text-button" type="button">פתיחת הבאנר מחדש</button></div><p>אפשר ללחוץ על קבלה, דחייה והתאמה אישית. זה אתר לדוגמה; לא נטענים בו כלי מעקב.</p><p class="small">נוסחי הבאנר זמינים בארבע שפות. טיוטות המסמכים המוצגות בהמשך הן בעברית ולישראל בלבד.</p></div>
+      <div class="preview-device"><iframe id="explore-preview" title="התנסות חיה בבאנר העוגיות" src="preview.html" sandbox="allow-scripts allow-same-origin"></iframe></div>
+    </section>
+    <section class="explore-section" aria-labelledby="design-title"><h2 id="design-title">12 עיצובים לבחירה</h2><p>לחצו על עיצוב כדי לראות אותו בתצוגה. הבחירה תעבור איתכם לאשף ההכנה.</p><div id="explore-themes" class="theme-gallery" role="group" aria-label="בחירת עיצוב"></div></section>
+    <section class="explore-section" aria-labelledby="documents-title"><h2 id="documents-title">המסמכים, לפני שממלאים פרטים</h2><p>דוגמאות לעסק בדיוני. שדות חסרים מסומנים להשלמה; אלה טיוטות לבדיקה משפטית, ללא אישור לפרסום.</p><div id="document-examples"></div></section>
+    <section id="catalog" class="explore-section" aria-labelledby="catalog-title"><h2 id="catalog-title">כל 13 התבניות — בלי הפתעות</h2><p>פתחו כל פריט כדי לקרוא את תבנית המקור המלאה. באנר העוגיות הוא רכיב מוכן; יתר הפריטים הם הנחיות ליישום, ולשלושה מסמכים יש גם מחולל טיוטות.</p><p id="catalog-status" role="status">טוענים את התבניות…</p><div id="catalog-items"></div><noscript>להתנסות אינטראקטיבית נדרש JavaScript. אפשר <a href="https://github.com/ward3107/web-compliance-prompts/tree/main/skills/web-compliance/templates">לקרוא את כל התבניות ב־GitHub</a> ללא התקנה.</noscript></section>
+    <section id="install" class="explore-section" aria-labelledby="install-title"><h2 id="install-title">עובד גם באופן עצמאי</h2><p>אין תלות ב־WordPress, בשירות ענן או בעוזר AI לשימוש בבאנר ובמחולל הטיוטות. אפשר להוריד את הסטודיו, לחלץ את ה־ZIP ולפתוח את START-HERE.html בדפדפן — גם בלי אינטרנט. הקבצים להטמעה נשארים אצלכם.</p><p><a class="button secondary" id="offline-download" href="web-compliance-studio.zip" download>הורדת סטודיו עצמאי למחשב</a></p><p class="small" id="offline-status">לשימוש מקומי במחשב: חלצו את כל הקבצים יחד, ואז פתחו START-HERE.html. בטלפון מומלץ להשתמש בגרסה המקוונת.</p><div class="install-options">
+      <article><span class="route-label">WordPress · בלי CLI</span><h3>מורידים, מעלים, מפעילים</h3><ol><li>משלימים את אשף ההכנה בדפדפן.</li><li>מורידים תוסף ZIP מותאם לאתר.</li><li>באתר שלכם: תוספים ← תוסף חדש ← העלאת תוסף ← התקנה והפעלה.</li></ol><a class="button" id="wordpress-link" href="start.html">הכנת תוסף WordPress</a></article>
+      <article><span class="route-label">אתר אחר / לא בטוחים</span><h3>חבילה למי שמטפל באתר</h3><p>בוחרים ״מערכת אחרת״ באשף ומורידים קבצים, תצוגה מקומית והוראות מדויקות. בוני אתרים חייבים לאפשר הוספת קוד; אין כרגע התקנה אוטומטית לכל פלטפורמה.</p><a id="other-link" href="start.html?platform=other">הכנת חבילת הטמעה</a></article>
+      <article><span class="route-label">רוצים רק פרומפטים?</span><h3>אפשר להתחיל בלי תוסף</h3><p>קראו את התבניות כאן או השתמשו בכלי המתקדם להכנת ZIP עם הפרומפטים והמקורות. התקנת תוסף בעוזר קוד היא אפשרות למפתחים בלבד.</p><a href="builder.html">פתיחת הכלי המתקדם</a></article>
+    </div><aside class="review-note"><strong>מה עדיין צריך לבדוק באתר שלכם?</strong>חיבור כלי המעקב להסכמה, נגישות האתר ומסמכי העסק. התוסף מציג באנר ואותות הסכמה; הוא אינו חוסם אוטומטית תוספים אחרים, אינו סורק את האתר ואינו מעניק אישור משפטי. כל חבילות המדינה ממתינות לביקורת מקצועית.</aside></section>
+  </main><footer><span>Web Compliance · MIT</span><a href="privacy.html">פרטיות ההתנסות</a><a href="https://github.com/ward3107/web-compliance-prompts/blob/main/SECURITY.md">אבטחה ודיווח</a></footer>
+  <script src="toolkit-loader.js"></script><script src="themes.js"></script><script src="documents-engine.js"></script><script src="explore.js"></script>
+</body></html>

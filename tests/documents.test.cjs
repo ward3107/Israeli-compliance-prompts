@@ -14,8 +14,11 @@ test('combined or unsupported jurisdictions cannot produce Israeli documents',()
  for(const market of ['eu','il+eu','unknown','us'])assert.throws(()=>engine.build({...project,values:{...project.values,market}},{}),/Israel-only/);
 });
 test('fact snapshot is independent and HTML output renders supplied markup as text',()=>{
- const details={owner:'<script>alert(1)</script>',address:'Example address'};const built=engine.build(project,details);details.owner='Changed';assert.match(built.facts.details.owner,/<script>/);
- const html=engine.html('Draft',built.documents.privacy);assert.doesNotMatch(html,/<script>/);assert.match(html,/&lt;script&gt;/);assert.match(html,/טיוטה לא מאושרת/);
+ const details={owner:'<script>alert(1)</script>',address:'Example address'};const built=engine.build(project,details);details.owner='Changed';assert.equal(built.facts.details.owner,'<script>alert(1)</script>');
+ const html=engine.html('Draft',built.documents.privacy);assert.doesNotMatch(html,/<script\b/i);assert.match(html,/&lt;script&gt;/);assert.match(html,/טיוטה לא מאושרת/);
+ for(const attack of ['<ScRiPt src=x>alert(1)</ScRiPt >','<script\n>alert(1)</script>','<img src=x onerror=alert(1)>']) {
+  const exported=engine.html('Draft',attack);assert.doesNotMatch(exported,/<(?:script|img)\b/i);assert.ok(exported.includes('&lt;'));
+ }
 });
 test('maximum form inputs fit editor and project limits',()=>{
  const details=Object.fromEntries(Object.keys(engine.fields).map(k=>[k,'א'.repeat(1000)]));const result=engine.build(project,details);

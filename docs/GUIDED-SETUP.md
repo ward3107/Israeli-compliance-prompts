@@ -1,4 +1,15 @@
-# Guided client setup
+# Preview-first guided setup
+
+Start with [the full preview](https://ward3107.github.io/web-compliance-prompts/explore.html): 12 working designs, three synthetic document examples and all 13 template sources before entering any personal/business data. The selected preset/language carry into the wizard; only allowlisted display preferences travel in the URL.
+
+The [portable studio ZIP](https://ward3107.github.io/web-compliance-prompts/web-compliance-studio.zip) works by extracting all files and opening `START-HERE.html` on a desktop browser. No Node, Python, local server, account or runtime library is required. External reference links still require internet access.
+
+## Universal installation
+
+Choose “מערכת אחרת” in the wizard. Extract the package and open `preview.html` locally. Upload only `cookie-consent.js`, `cookie-consent.css`, `theme.css`, and `install.js` to `/web-compliance/`. Copy `embed.html.txt` into the site's custom HTML/layout. The installer creates the preferences button itself and guards against duplicate initialization. A closed platform must allow custom scripts; this is not an automatic integration with every website builder.
+
+Load the files once in the browser shell for SPAs. Connect tracker start/stop behavior to `compliance:consent` and ensure defaults are applied before trackers execute. Remove the snippet and four files to uninstall. WordPress users still use the normal ZIP upload flow.
+
 
 The [guided flow](https://ward3107.github.io/web-compliance-prompts/start.html) is the entry point for clients who do not work with source code. The advanced customizer remains available.
 

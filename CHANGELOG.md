@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.6.0 — Preview first, portable installation and security hardening
+
+- Added a complete no-details preview: 12 designs, four banner languages, mobile/desktop preview, three sample documents and all 13 template sources.
+- Added a double-clickable offline studio and SHA-256 checksum; no runtime dependencies, CDN, account or local server.
+- Added a universal four-file installer, copyable embed instructions, offline banner preview and automatic preferences button. Retained the WordPress adapter.
+- Fixed executable policy URLs in the widget, inherited translation names, advanced-builder market-based opt-out defaults and custom storage fallback.
+- Hardened ZIP paths/limits, preview messages, public distribution allowlisting, CSP and CI permissions/action pins. Added dependency audits, CodeQL and Dependabot configuration; Pages follows a successful main browser run.
+- Reworked English/Hebrew READMEs and installation/security documentation. Legal-review status and legal source dates were not advanced.
+
+
 ## 2.5.0
 
 - Add browser-local, editable Hebrew privacy, terms and refund drafts for Israel-only projects.

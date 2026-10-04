@@ -162,7 +162,7 @@
   function readStored(region, storageKey) {
     try {
       var raw = global.localStorage.getItem(storageKey || STORAGE_KEY);
-      if (!raw) return null;
+      if (!raw || raw.length > 4096) return null;
       var data = JSON.parse(raw);
       if (!data || data.version !== VERSION) return null;
       if (typeof data.analytics !== 'boolean' || typeof data.marketing !== 'boolean') return null;
@@ -295,8 +295,9 @@
       if (this._gpc) noticeHtml += '<p class="cc-notice">' + esc(t.gpcNotice) + '</p>';
       if (ukExempt) noticeHtml += '<p class="cc-notice">' + esc(t.ukExemptNotice) + '</p>';
 
-      var privacyHtml = cfg.privacyPolicyUrl
-        ? '<a class="cc-link" href="' + esc(cfg.privacyPolicyUrl) + '">' + esc(t.privacy) + '</a>'
+      var privacyUrl = safePrivacyUrl(cfg.privacyPolicyUrl);
+      var privacyHtml = privacyUrl
+        ? '<a class="cc-link" href="' + esc(privacyUrl) + '">' + esc(t.privacy) + '</a>'
         : '';
 
       root.innerHTML =
@@ -399,7 +400,7 @@
       var lang = resolveLanguage(this._cfg.language);
       var region = (this._cfg.region && this._cfg.region !== 'auto') ? this._cfg.region : 'auto';
       var ukExempt = region === 'uk' && this._cfg.ukFirstPartyAnalyticsExempt === true;
-      var stored = this._consent || readStored(region) || { analytics: !!ukExempt, marketing: false };
+      var stored = this._consent || readStored(region, this._cfg.storageKey) || { analytics: !!ukExempt, marketing: false };
       this._render(lang, region, ukExempt, stored);
     }
   };
@@ -407,11 +408,22 @@
   // ---- small helpers -------------------------------------------------------
 
   function resolveLanguage(pref) {
-    if (pref && pref !== 'auto' && I18N[pref]) return pref;
+    if (pref && pref !== 'auto' && Object.prototype.hasOwnProperty.call(I18N, pref)) return pref;
     var pageLang = document.documentElement && (document.documentElement.lang || '').slice(0, 2).toLowerCase();
-    if (I18N[pageLang]) return pageLang;
+    if (Object.prototype.hasOwnProperty.call(I18N, pageLang)) return pageLang;
     var nav = (global.navigator && (global.navigator.language || '')).slice(0, 2).toLowerCase();
-    return I18N[nav] ? nav : 'en';
+    return Object.prototype.hasOwnProperty.call(I18N, nav) ? nav : 'en';
+  }
+
+  // Escaping HTML alone does not make a URL safe. Validate at the rendering
+  // boundary as this widget is also used outside the hosted builders.
+  function safePrivacyUrl(value) {
+    if (typeof value !== 'string' || !value || value.length > 2000 || /[\\\s<>\u0000-\u001f\u007f]/.test(value) || value.indexOf('//') === 0) return '';
+    try {
+      var url = new URL(value, 'https://consent.invalid/');
+      if (!/^https?:$/.test(url.protocol) || url.username || url.password) return '';
+      return value;
+    } catch (e) { return ''; }
   }
 
   function row(id, label, desc, checked, locked, alwaysLabel) {
