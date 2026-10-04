@@ -23,7 +23,9 @@ jobs:
         with:
           script: |
             const ref = context.payload.workflow_run.head_sha;
-            const required = ['validate', 'browser', 'dependencies', 'codeql (javascript-typescript)', 'codeql (python)', 'CodeQL'];
+            // The separate CodeQL PR annotation check is not emitted for every
+            // push. The analysis jobs enforce the SARIF severity gate themselves.
+            const required = ['validate', 'browser', 'dependencies', 'codeql (javascript-typescript)', 'codeql (python)'];
             for (let attempt = 0; attempt < 30; attempt++) {
               const main = await github.rest.git.getRef({...context.repo, ref: 'heads/main'});
               if (main.data.object.sha !== ref) {
