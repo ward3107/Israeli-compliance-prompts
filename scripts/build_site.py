@@ -45,6 +45,12 @@ def build(output):
     if any(p.is_symlink() for p in output.rglob('*')):
         raise ValueError('Symlink in site output')
     files = public_files()
+    # The pack/template loaders also read source directories. Fail before
+    # rendering if those directories contain an unreviewed build input.
+    for directory, pattern in [('jurisdictions', '*.yaml'), ('templates', '*.md')]:
+        for source in (ROOT / 'skills/web-compliance' / directory).glob(pattern):
+            if source.relative_to(ROOT).as_posix() not in files:
+                raise ValueError('Unlisted public build input: ' + source.name)
     site_files = {}
     for name, text in files.items():
         if name.startswith('docs/site/'):
@@ -55,6 +61,9 @@ def build(output):
         for prefix, directory in [('examples/profiles/', 'profiles/'), ('docs/examples/', 'examples/')]:
             if name.startswith(prefix):
                 site_files[directory + Path(name).name] = text
+    expected_output = set(site_files) | {'.nojekyll', 'toolkit.json', 'web-compliance-studio.zip', 'SHA256SUMS.txt'}
+    if any(p.is_file() and p.relative_to(output).as_posix() not in expected_output for p in output.rglob('*')):
+        raise ValueError('Unexpected existing output file; use an empty dedicated directory')
     for name, text in site_files.items():
         destination = output / name
         destination.parent.mkdir(parents=True, exist_ok=True)

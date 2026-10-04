@@ -50,6 +50,25 @@ class DistributionTests(unittest.TestCase):
         package = json.loads(public_files()['package.json'])
         self.assertFalse(package.get('dependencies'))
 
+    def test_unlisted_pack_cannot_bypass_the_public_source_allowlist(self):
+        source = ROOT / 'skills/web-compliance/jurisdictions/private-test.yaml'
+        try:
+            source.write_text('private: test')
+            with tempfile.TemporaryDirectory() as directory:
+                with self.assertRaisesRegex(ValueError, 'Unlisted public build input'):
+                    build(directory)
+                self.assertFalse((Path(directory) / 'toolkit.json').exists())
+        finally:
+            source.unlink(missing_ok=True)
+
+    def test_stale_private_output_is_preserved_but_blocks_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            private = Path(directory) / 'private-review.json'
+            private.write_text('keep private')
+            with self.assertRaisesRegex(ValueError, 'Unexpected existing output'):
+                build(directory)
+            self.assertEqual(private.read_text(), 'keep private')
+
 
 if __name__ == '__main__':
     unittest.main()
