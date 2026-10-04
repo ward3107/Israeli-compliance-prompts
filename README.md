@@ -115,7 +115,7 @@ Or open any file in `skills/web-compliance/templates/`, fill its placeholders an
 ### Reusable project profiles
 
 ```bash
-python -m pip install --require-hashes -r requirements.lock
+python -m pip install --require-hashes -r requirements.txt
 python scripts/generate.py --list
 python scripts/generate.py --describe cookie-banner
 python scripts/generate.py --profile project-profile.json --artifact cookie-banner --output generated/cookie-banner.md --manifest generated/cookie-banner.manifest.json
@@ -126,7 +126,7 @@ Start from the [synthetic example profiles](examples/profiles/). Missing facts o
 ### Development and verification
 
 ```bash
-python -m pip install --require-hashes -r requirements.lock
+python -m pip install --require-hashes -r requirements.txt
 npm ci --ignore-scripts
 python scripts/validate.py
 python -m unittest discover -s tests -p 'test_*.py'
@@ -146,7 +146,7 @@ See [WordPress QA instructions](docs/GUIDED-SETUP.md#verification) for the dispo
 
 Build output is `generated/site/`; it includes the online studio, offline ZIP and checksum. Review additions to `scripts/public-files.json` when introducing public files. Unlisted local files and symlinks are excluded/rejected, so private files cannot silently enter the distribution through directory scanning.
 
-To update Python dependencies, edit `requirements.txt`, regenerate `requirements.lock` with `pip-compile --generate-hashes --strip-extras --output-file=requirements.lock requirements.txt`, audit and test the change. Do not update legal review dates just because a code check passed. The monthly freshness workflow flags packs older than 180 days for a source re-check.
+To update Python build dependencies, edit `requirements.in`, then run `python -m piptools compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in`. Install with `--require-hashes`, run `python scripts/check_dependencies.py --installed`, audit and test the change. `requirements.txt` is the generated, hash-locked file; do not edit it by hand. CI rejects stale direct pins, missing hashes and a mismatched installed environment. Do not update legal review dates just because a code check passed. The monthly freshness workflow flags packs older than 180 days for a source re-check.
 
 ## Documentation
 
@@ -155,3 +155,5 @@ To update Python dependencies, edit `requirements.txt`, regenerate `requirements
 ## License
 
 [MIT](LICENSE). No warranty; legal review remains pending.
+
+Dependency maintenance uses one weekly grouped version-update PR per ecosystem (Python, npm and GitHub Actions), with one open version PR per ecosystem. Security fixes are grouped separately and are not delayed by that version-update limit. All updates require passing checks and review; there is no automatic merge. Enable automatic deletion of merged branches in repository settings.

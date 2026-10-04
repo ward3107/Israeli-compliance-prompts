@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — dependency maintenance
+
+- Consolidated the nine initial dependency proposals, retaining immutable GitHub Action pins.
+- Migrated Python inputs/lock to the standard requirements.in/requirements.txt layout so Dependabot updates hashes and versions together.
+- Added fail-closed lock and installed-version checks, including stale-lock regression coverage.
+- Grouped weekly version updates and security updates per ecosystem; limited regular update PRs to one per ecosystem.
+- Added a pre-merge Pages packaging smoke test. Runtime dependencies remain zero.
+
 ## 2.6.0 — Preview first, portable installation and security hardening
 
 - Added a complete no-details preview: 12 designs, four banner languages, mobile/desktop preview, three sample documents and all 13 template sources.
