@@ -6,8 +6,13 @@ const site=path.resolve('generated/site'),out=path.resolve('test-results/experie
 const axe=fs.readFileSync(require.resolve('axe-core/axe.min.js'),'utf8');
 const server=http.createServer((req,res)=>{
   const file=path.resolve(site,new URL(req.url,'http://localhost').pathname.slice(1)||'index.html');
-  if(!file.startsWith(site+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}
-  res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.zip':'application/zip'})[path.extname(file)]||'text/plain');res.end(fs.readFileSync(file));
+  if(!file.startsWith(site+path.sep)){res.writeHead(404);res.end();return;}
+  let fd;
+  try {
+    fd=fs.openSync(file,fs.constants.O_RDONLY|fs.constants.O_NOFOLLOW);
+    if(!fs.fstatSync(fd).isFile()){res.writeHead(404);res.end();return;}
+    res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.zip':'application/zip'})[path.extname(file)]||'text/plain');res.end(fs.readFileSync(fd));
+  } catch {res.writeHead(404);res.end();} finally {if(fd!==undefined)fs.closeSync(fd);}
 });
 async function main(){
   fs.mkdirSync(out,{recursive:true});

@@ -97,7 +97,7 @@ Read [SECURITY.md](SECURITY.md) for threat boundaries, reporting and deployment 
 
 Controls include URL-scheme validation at the widget boundary, escaped customer text, bounded project import, cross-platform ZIP path validation, an explicit public-file allowlist, a static Content Security Policy, read-only workflow defaults and commit-pinned GitHub Actions. The repository includes regression tests, dependency audits, CodeQL and Dependabot configuration. These measures do not constitute an independent penetration test or guarantee that vulnerabilities cannot exist.
 
-GitHub Pages publication follows a successful **main-branch browser workflow** and builds that exact tested commit. CodeQL also runs independently. Enable repository rules to require the `validate`, `browser`, dependency and CodeQL checks before merging. Hosting response headers, branch protection, secret scanning and MFA need account/host configuration; repository files alone cannot enforce them.
+GitHub Pages publication follows a successful **main-branch browser workflow** and builds that exact tested commit. Publication also requires successful validation, dependency and CodeQL checks on that SHA. Enable repository rules to require the `validate`, `browser`, dependency and CodeQL checks before merging. Hosting response headers, branch protection, secret scanning and MFA need account/host configuration; repository files alone cannot enforce them.
 
 ## Optional developer workflows
 

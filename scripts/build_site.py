@@ -72,8 +72,13 @@ def build(output):
     # A double-clickable distribution: no fetch(file://), local server, npm,
     # Python, CDN, or hosted account is required for end users.
     offline = dict(site_files)
+    # Chromium treats different file:// documents as opaque origins. Explicitly
+    # permit local preview frames in the portable build only; no network frames.
+    for name in offline:
+        if name.endswith('.html'):
+            offline[name] = offline[name].replace("frame-src 'self'", 'frame-src file:')
     offline['toolkit-loader.js'] = 'window.ToolkitSource={load:function(){return Promise.resolve(' + payload.replace('<', '\\u003c').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029') + ');}};\n'
-    offline['START-HERE.html'] = site_files['explore.html']
+    offline['START-HERE.html'] = offline['explore.html']
     offline['LICENSE'] = files['LICENSE']
     archive = output / 'web-compliance-studio.zip'
     with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as package:

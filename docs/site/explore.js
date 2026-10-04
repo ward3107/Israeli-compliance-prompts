@@ -18,7 +18,7 @@
     $('explore-preview').classList.toggle('mobile',id==='narrow');
     ['wide','narrow'].forEach(function(key){$(key).setAttribute('aria-pressed',String(id===key));});
   });});
-  window.addEventListener('message',function(event){if(event.origin===location.origin&&event.source===$('explore-preview').contentWindow&&event.data&&event.data.type==='compliance-preview-ready')preview();});
+  window.addEventListener('message',function(event){if((location.protocol==='file:'?event.origin==='null'||event.origin==='file://':event.origin===location.origin)&&event.source===$('explore-preview').contentWindow&&event.data&&event.data.type==='compliance-preview-ready')preview();});
   function detail(container,title,note,source,rtl){
     var details=document.createElement('details'),summary=document.createElement('summary'),small=document.createElement('small'),pre=document.createElement('pre');
     summary.append(document.createTextNode(title));small.textContent=note;summary.append(small);pre.textContent=source;pre.dir=rtl?'rtl':'ltr';pre.tabIndex=0;pre.setAttribute('role','region');pre.setAttribute('aria-label',title);details.append(summary,pre);container.append(details);

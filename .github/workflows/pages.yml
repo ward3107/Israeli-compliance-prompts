@@ -14,7 +14,32 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      checks: read
     steps:
+      - name: Require successful checks on the current main commit
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        with:
+          script: |
+            const ref = context.payload.workflow_run.head_sha;
+            const required = ['validate', 'browser', 'dependencies', 'codeql (javascript-typescript)', 'codeql (python)', 'CodeQL'];
+            for (let attempt = 0; attempt < 30; attempt++) {
+              const main = await github.rest.git.getRef({...context.repo, ref: 'heads/main'});
+              if (main.data.object.sha !== ref) {
+                core.setFailed('A newer main commit exists; refusing to publish an older build.');
+                return;
+              }
+              const checks = await github.paginate(github.rest.checks.listForRef, {...context.repo, ref, filter: 'latest', per_page: 100});
+              const chosen = required.map(name => checks.find(check => check.name === name));
+              if (chosen.some(check => check && check.status === 'completed' && check.conclusion !== 'success')) {
+                core.setFailed('A required validation or security check did not pass.');
+                return;
+              }
+              if (chosen.every(check => check && check.status === 'completed' && check.conclusion === 'success')) return;
+              await new Promise(resolve => setTimeout(resolve, 10000));
+            }
+            core.setFailed('Required checks did not finish successfully within five minutes.');
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}

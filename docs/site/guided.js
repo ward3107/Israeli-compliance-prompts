@@ -154,6 +154,6 @@
   $('download-install').addEventListener('click',installation);$('download-review').addEventListener('click',reviewDownload);
   $('download-handoff').addEventListener('click',function(){save(new Blob([instructions($('platform').value==='wordpress')],{type:'text/html;charset=utf-8'}),'installation-handoff.html');});
   $('save-project').addEventListener('click',function(){save(new Blob([json(project())],{type:'application/json'}),'web-compliance-project.json');});$('resume-project').addEventListener('change',resume);
-  window.addEventListener('message',function(event){if(event.origin===location.origin && event.source===$('guided-preview').contentWindow && event.data && event.data.type==='compliance-preview-ready')preview();});
+  window.addEventListener('message',function(event){if((location.protocol==='file:'?event.origin==='null'||event.origin==='file://':event.origin===location.origin) && event.source===$('guided-preview').contentWindow && event.data && event.data.type==='compliance-preview-ready')preview();});
   ToolkitSource.load().then(function(data){if(!data.files['integrations/wordpress/web-compliance.php'])throw new Error();toolkit=data;$('next').disabled=false;$('load-status').textContent='מוכנים להתחיל. הפרטים אינם נשלחים לשרת.';}).catch(function(){$('load-status').textContent='קובצי ההתקנה לא נטענו. בדקו את החיבור ורעננו את העמוד.';});
 })();

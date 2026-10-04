@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   window.addEventListener('message', function (event) {
-    if (event.origin !== location.origin || event.source !== parent || !event.data || event.data.type !== 'compliance-preview') return;
+    if (!(location.protocol==='file:'?event.origin==='null'||event.origin==='file://':event.origin===location.origin) || event.source !== parent || !event.data || event.data.type !== 'compliance-preview') return;
     var config = event.data.config;
     if (!config || typeof config !== 'object' || Array.isArray(config) ||
         typeof event.data.css !== 'string' || event.data.css.length > 16000 ||
