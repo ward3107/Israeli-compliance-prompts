@@ -1,7 +1,16 @@
 const {chromium,firefox,webkit}=require('playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http'),{execFileSync}=require('node:child_process');
 const site=path.resolve('generated/site'),out=path.resolve('test-results');
-const server=http.createServer((req,res)=>{const file=path.resolve(site,new URL(req.url,'http://localhost').pathname.slice(1)||'start.html');if(!file.startsWith(site+path.sep)||!fs.existsSync(file)){res.writeHead(404);return res.end();}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'text/plain');res.end(fs.readFileSync(file));});
+const server=http.createServer((req,res)=>{
+ const file=path.resolve(site,new URL(req.url,'http://localhost').pathname.slice(1)||'start.html');
+ if(!file.startsWith(site+path.sep)){res.writeHead(404);res.end();return;}
+ let fd;
+ try {
+  fd=fs.openSync(file,fs.constants.O_RDONLY|fs.constants.O_NOFOLLOW);
+  if(!fs.fstatSync(fd).isFile()){res.writeHead(404);res.end();return;}
+  res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'text/plain');res.end(fs.readFileSync(fd));
+ }catch{res.writeHead(404);res.end();}finally{if(fd!==undefined)fs.closeSync(fd);}
+});
 async function download(page,id,name){const wait=page.waitForEvent('download');await page.locator('#'+id).click();const file=await wait;const target=path.join(out,name);await file.saveAs(target);return target;}
 async function main(){fs.mkdirSync(out,{recursive:true});await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;try{for(const [name,engine] of Object.entries({chromium,firefox,webkit}).filter(([name])=>!process.env.WCT_BROWSERS||process.env.WCT_BROWSERS.split(",").includes(name))){
  const browser=await engine.launch();try{const page=await browser.newPage({viewport:{width:1280,height:900}}),errors=[],external=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base)&&!r.url().startsWith('blob:'))external.push(r.url());});await page.goto(base+'/start.html');await page.waitForFunction(()=>!document.getElementById('next').disabled);

@@ -12,9 +12,14 @@ const server=http.createServer((req,res)=>{
   const directory=url.pathname.startsWith('/package/')?out:site;
   const relative=url.pathname.startsWith('/package/')?url.pathname.slice(9):url.pathname.slice(1);
   const file=path.resolve(directory,relative||'builder.html');
-  if(!file.startsWith(directory+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}
-  const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'};
-  res.writeHead(200,{'Content-Type':(types[path.extname(file)]||'text/plain')+'; charset=utf-8'});res.end(fs.readFileSync(file));
+  if(!file.startsWith(directory+path.sep)){res.writeHead(404);res.end();return;}
+  let fd;
+  try {
+    fd=fs.openSync(file,fs.constants.O_RDONLY|fs.constants.O_NOFOLLOW);
+    if(!fs.fstatSync(fd).isFile()){res.writeHead(404);res.end();return;}
+    const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'};
+    res.writeHead(200,{'Content-Type':(types[path.extname(file)]||'text/plain')+'; charset=utf-8'});res.end(fs.readFileSync(fd));
+  } catch {res.writeHead(404);res.end();} finally {if(fd!==undefined)fs.closeSync(fd);}
 });
 async function main(){
   fs.mkdirSync(out,{recursive:true});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));

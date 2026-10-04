@@ -3,7 +3,16 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {execFileSync}=require('node:child_process');
 const root=path.resolve(__dirname,'..'),site=path.join(root,'generated/site'),out=path.join(root,'test-results');
 const axe=fs.readFileSync(require.resolve('axe-core/axe.min.js'),'utf8');
-const server=http.createServer((req,res)=>{const file=path.resolve(site,new URL(req.url,'http://localhost').pathname.slice(1)||'start.html');if(!file.startsWith(site+path.sep)||!fs.existsSync(file)){res.writeHead(404);res.end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'text/plain');res.end(fs.readFileSync(file));});
+const server=http.createServer((req,res)=>{
+ const file=path.resolve(site,new URL(req.url,'http://localhost').pathname.slice(1)||'start.html');
+ if(!file.startsWith(site+path.sep)){res.writeHead(404);res.end();return;}
+ let fd;
+ try {
+  fd=fs.openSync(file,fs.constants.O_RDONLY|fs.constants.O_NOFOLLOW);
+  if(!fs.fstatSync(fd).isFile()){res.writeHead(404);res.end();return;}
+  res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'text/plain');res.end(fs.readFileSync(fd));
+ }catch{res.writeHead(404);res.end();}finally{if(fd!==undefined)fs.closeSync(fd);}
+});
 async function download(page,id,name){const wait=page.waitForEvent('download');await page.locator('#'+id).click();const item=await wait;const target=path.join(out,name);await item.saveAs(target);return target;}
 async function main(){
  fs.mkdirSync(out,{recursive:true});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base='http://127.0.0.1:'+server.address().port;
