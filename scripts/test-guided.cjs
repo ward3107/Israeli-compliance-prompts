@@ -7,7 +7,7 @@ const server=http.createServer((req,res)=>{const file=path.resolve(site,new URL(
 async function download(page,id,name){const wait=page.waitForEvent('download');await page.locator('#'+id).click();const item=await wait;const target=path.join(out,name);await item.saveAs(target);return target;}
 async function main(){
  fs.mkdirSync(out,{recursive:true});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base='http://127.0.0.1:'+server.address().port;
- try{for(const [name,engine] of Object.entries({chromium,firefox,webkit})){
+ try{for(const [name,engine] of Object.entries({chromium,firefox,webkit}).filter(([name])=>!process.env.WCT_BROWSERS||process.env.WCT_BROWSERS.split(",").includes(name))){
   const browser=await engine.launch();try{
    const page=await browser.newPage({viewport:{width:1320,height:900}}),errors=[],unexpected=[];
    page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base)&&!r.url().startsWith('blob:'))unexpected.push(r.url());});
@@ -56,7 +56,7 @@ async function main(){
    await page.locator('#next').click();await page.locator('#market').selectOption('unknown');await page.locator('#next').click();await page.locator('#next').click();assert.equal(await page.locator('#download-install').isEnabled(),false);
    await page.locator('#resume-project').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from('{"format":"web-compliance-project","version":1,"theme":"__proto__"}')});
    await page.getByText(/הקובץ אינו פרויקט תקין/).waitFor();
-   await page.reload();await page.waitForFunction(()=>!document.getElementById('next').disabled);await page.addScriptTag({content:axe});
+   await page.reload();await page.waitForFunction(()=>!document.getElementById('next').disabled);await page.evaluate(axe);
    const result=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}));assert.deepEqual(result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[]);
    await page.setViewportSize({width:360,height:740});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:path.join(out,'guided-'+name+'-mobile.png'),fullPage:true});
    assert.deepEqual(errors,[]);assert.deepEqual(unexpected,[]);console.log(name+': guided flow, unknowns, safe links, legal ZIP, WordPress ZIP, private data separation, resume validation, accessibility and mobile passed');

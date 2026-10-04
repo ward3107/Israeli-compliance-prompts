@@ -69,7 +69,7 @@ function setup({ gpc = false, stored, blocked = false, language = 'en' } = {}) {
     },
     dataLayer: []
   };
-  vm.runInNewContext(source, { window, document });
+  vm.runInNewContext(source, { window, document, URL });
   return {
     widget: window.CookieConsent, window, roots, changes, saved: () => saved,
     config: { onChange(c) { changes.push(c); } },
@@ -81,6 +81,27 @@ function setup({ gpc = false, stored, blocked = false, language = 'en' } = {}) {
 function choice(analytics, marketing, extra = {}) {
   return JSON.stringify({ version: '1.0', region: 'eu', expires: Date.now() + 60000, analytics, marketing, ...extra });
 }
+test('the public widget rejects executable, credentialed and malformed policy URLs', () => {
+  for (const url of ['javascript:alert(1)', 'JaVaScRiPt:alert(1)', 'data:text/html,hi', '//evil.example', '/\\evil.example', 'https://user:pass@example.com', 'java\nscript:alert(1)', 'https://example.com/\u0000', {}, 42]) {
+    const h = setup();h.widget.init({...h.config, privacyPolicyUrl:url});
+    assert.doesNotMatch(h.roots[0].innerHTML, /class="cc-link"/);
+  }
+  for (const url of ['/privacy', 'privacy.html', 'https://example.com/privacy?a=1&b=2']) {
+    const h = setup();h.widget.init({...h.config, privacyPolicyUrl:url});
+    assert.match(h.roots[0].innerHTML, /class="cc-link"/);
+    assert.doesNotMatch(h.roots[0].innerHTML, /a=1&b=2/);
+  }
+});
+test('prototype names cannot select a translation object', () => {
+  for (const language of ['__proto__','constructor','toString']) {
+    const h = setup();h.widget.init({...h.config,language});
+    assert.equal(h.roots[0].attrs['aria-label'],'We value your privacy');
+  }
+});
+test('oversized stored consent fails closed', () => {
+  const h=setup({stored:choice(true,true,{padding:'x'.repeat(5000)})});
+  h.widget.init({...h.config,region:'eu'});assert.equal(h.changes.at(-1).analytics,false);
+});
 test('returning visitor: GPC overrides saved marketing consent', () => {
   const h = setup({ gpc: true, stored: choice(true, true, { region: 'us-ca' }) });
   h.widget.init({ ...h.config, region: 'us-ca' });

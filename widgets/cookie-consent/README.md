@@ -1,5 +1,9 @@
 # 🍪 Cookie Consent widget
 
+Want to preview and install without a terminal? [Explore the designs](https://ward3107.github.io/web-compliance-prompts/explore.html) → [download a configured package](https://ward3107.github.io/web-compliance-prompts/start.html). The generated universal installer needs only four local files and creates the preferences button automatically. WordPress is optional. This widget has **zero runtime dependencies**.
+
+Security: policy links are validated at the widget boundary, not merely HTML-escaped. Unsafe links are omitted. Generated packages default to `region: 'auto'`; explicit opt-out regions in the API below require verified visitor context and applicability. Integrate consent before trackers execute. Read [SECURITY.md](../../SECURITY.md) for deployment limits.
+
 A **drop-in, framework-agnostic cookie-consent banner** — vanilla JS + CSS, no
 build step, no dependencies, no network calls. It's the runnable counterpart to
 the `cookie-banner` prompt template: instead of generating code, you paste these

@@ -57,12 +57,13 @@
       (position==='top'?'.cc-root { top:0; bottom:auto; } .cc-root .cc-banner { border-bottom:1px solid var(--cc-border); border-radius:0 0 '+r+'px '+r+'px; }\n':
        position==='corner'?'.cc-root { left:auto; right:16px; bottom:16px; width:min(440px,calc(100% - 32px)); max-height:calc(100dvh - 32px); } .cc-root .cc-banner { border-bottom:1px solid var(--cc-border); border-radius:'+r+'px; }\n':'');
   }
-  function config() { return {textOverrides:studio?studio.copy():{},region:markets().length>1?'auto':markets()[0],language:$('language').value,privacyPolicyUrl:$('privacy').value.trim(),brandColor:$('brand').value,ukFirstPartyAnalyticsExempt:false}; }
+  // Target markets do not establish a visitor's verified location.
+  function config() { return {textOverrides:studio?studio.copy():{},region:'auto',language:$('language').value,privacyPolicyUrl:$('privacy').value.trim(),brandColor:$('brand').value,ukFirstPartyAnalyticsExempt:false}; }
   function preview() {if(studio)studio.syncLanguage();
     $('radius-value').textContent=$('radius').value;
     var ratio=contrast($('foreground').value,$('background').value);
     $('contrast').textContent=(ratio>=4.5?'ניגודיות הטקסט תקינה: ':'בחרו צבעים מנוגדים יותר: ')+ratio.toFixed(2)+' / 4.5';
-    $('preview').contentWindow.postMessage({type:'compliance-preview',css:css()+(studio?studio.css():''),config:config(),name:$('business').value},location.origin);
+    $('preview').contentWindow.postMessage({type:'compliance-preview',css:css()+(studio?studio.css():''),config:config(),name:$('business').value},location.protocol==='file:'?'*':location.origin);
   }
   function renderArtifacts() {
     var prior=selected(); $('artifacts').replaceChildren();
@@ -91,7 +92,8 @@
     if (!$('builder').reportValidity()) return false;
     if (!selected().length) { $('result').textContent='בחרו לפחות פריט אחד לחבילה.'; return false; }
     var url=$('privacy').value.trim();
-    if (!/^(https?:\/\/|\/(?!\/))[^\s<>]*$/.test(url)) { $('result').textContent='קישור הפרטיות צריך להתחיל ב־/ או ב־https://.'; $('privacy').focus(); return false; }
+    var safe=false;try {var parsed=new URL(url,location.protocol==='file:'?'*':location.origin);safe=/^(https?:\/\/|\/(?!\/))[^\s<>\\]*$/.test(url)&&/^https?:$/.test(parsed.protocol)&&!parsed.username&&!parsed.password;}catch(error){}
+    if (!safe) { $('result').textContent='קישור הפרטיות צריך להתחיל ב־/ או ב־https://, ללא פרטי כניסה או לוכסנים הפוכים.'; $('privacy').focus(); return false; }
     if (contrast($('foreground').value,$('background').value)<4.5) { $('result').textContent='שפרו את ניגודיות הטקסט לפני ההורדה (לפחות 4.5).'; $('foreground').focus(); return false; }
     return true;
   }
@@ -127,5 +129,5 @@
   studio=ToolkitStudio($('copy-studio'),function(){return $('language').value;},preview);
   ToolkitThemes.gallery($('theme-gallery'),'data-preset',function(key,preset){['brand','background','foreground'].forEach(function(id,i){$(id).value=preset.colors[i];});$('radius').value=preset.radius;$('font').value=preset.font;preview();});
   window.addEventListener('message',function(event){if(event.origin===location.origin && event.source===$('preview').contentWindow && event.data && event.data.type==='compliance-preview-ready')preview();});
-  fetch('toolkit.json').then(function(response){if(!response.ok)throw new Error('Toolkit unavailable');return response.json();}).then(function(toolkit){data=toolkit;renderArtifacts();$('download').disabled=false;$('profile-download').disabled=false;$('result').textContent='בחרו עיצוב והשלימו את הפרטים כדי להוריד.';preview();}).catch(function(){ $('result').textContent='לא ניתן לטעון את הטולקיט. בדקו את החיבור ורעננו את העמוד.'; });
+  ToolkitSource.load().then(function(toolkit){data=toolkit;renderArtifacts();$('download').disabled=false;$('profile-download').disabled=false;$('result').textContent='בחרו עיצוב והשלימו את הפרטים כדי להוריד.';preview();}).catch(function(){ $('result').textContent='לא ניתן לטעון את הטולקיט. בדקו את החיבור ורעננו את העמוד.'; });
 })();

@@ -1,5 +1,7 @@
 # Jurisdiction packs
 
+To inspect all source templates before installation, use the [browser catalog](https://ward3107.github.io/web-compliance-prompts/explore.html#catalog). End users do not need Python or a CLI; pack contribution/validation is a developer workflow described in the [main README](../../../README.md#development-and-verification). All packs remain pending legal review.
+
 Each `<code>.yaml` file describes **which laws apply in one jurisdiction** —
 separately from the `templates/`, which describe **what to build**. The skill
 composes them: `template × jurisdiction(s) → filled prompt`.

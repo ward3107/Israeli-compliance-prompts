@@ -20,7 +20,7 @@ async function main(){
   fs.mkdirSync(out,{recursive:true});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const base='http://127.0.0.1:'+server.address().port;
   try{
-    for(const [name,engine] of Object.entries({chromium,firefox,webkit})){
+    for(const [name,engine] of Object.entries({chromium,firefox,webkit}).filter(([name])=>!process.env.WCT_BROWSERS||process.env.WCT_BROWSERS.split(",").includes(name))){
       const browser=await engine.launch();
       try{
         const page=await browser.newPage({viewport:{width:1360,height:900}}), errors=[];
@@ -58,6 +58,7 @@ async function main(){
           'z=zipfile.ZipFile(sys.argv[1]); assert z.testzip() is None',
           'p=json.loads(z.read("project-profile.json")); assert p["jurisdictions"]==["us-ca"]; assert p["variables"]["BUSINESS_NAME"]=="Example <company>"',
           'm=json.loads(z.read("manifest.json")); assert m["markets"]==["us","us-ca"]',
+          'assert json.loads(z.read("consent-config.json"))["region"]=="auto"',
           'assert "[MISSING:" not in z.read("drafts/cookie-banner.md").decode()',
           'assert "California" in z.read("drafts/cookie-banner.md").decode()',
           'assert "toolkit/skills/web-compliance/templates/privacy-policy.md" in z.namelist()',
@@ -65,7 +66,7 @@ async function main(){
           'z.extractall(sys.argv[2])'
         ].join('\n'),archive,extracted],{stdio:'pipe'});
         execFileSync('python',[path.join(extracted,'toolkit/scripts/generate.py'),'--profile',path.join(extracted,'project-profile.json'),'--artifact','cookie-banner','--output',path.join(extracted,'regenerated.md')],{stdio:'pipe'});
-        await page.goto(base+'/package/builder-'+name+'/demo.html');await page.getByRole('button',{name:'Do Not Sell or Share My Personal Information',exact:true}).click();
+        await page.goto(base+'/package/builder-'+name+'/demo.html');await page.getByRole('button',{name:'Reject all',exact:true}).click();
         await page.getByRole('button',{name:'Cookie preferences',exact:true}).click();
         assert.equal(await page.locator('.cc-root').evaluate(el=>getComputedStyle(el).getPropertyValue('--cc-bg').trim()),'#152435');
         await page.goto(base+'/builder.html');await page.waitForFunction(()=>!document.getElementById('download').disabled);
@@ -83,7 +84,7 @@ async function main(){
           }
           await page.goto(base+'/builder.html');await page.waitForFunction(()=>!document.getElementById('download').disabled);
         }
-        await page.addScriptTag({content:axe});
+        await page.evaluate(axe);
         const audit=await page.evaluate(async()=>await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}));
         assert.deepEqual(audit.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[],'builder accessibility');
         await page.setViewportSize({width:360,height:740});await page.locator('#mobile').click();

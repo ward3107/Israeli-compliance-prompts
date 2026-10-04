@@ -114,7 +114,7 @@ async function main() {
         });
         await scenario('public demo mobile and desktop', async page => {
           await page.goto(`${base}/site/`);
-          await page.addScriptTag({ content: axe });
+          await page.evaluate(axe);
           let audit = await page.evaluate(() => axe.run({ runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] } }));
           assert.deepEqual(audit.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.failureSummary) })), []);
           assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
@@ -143,7 +143,7 @@ async function main() {
             assert.equal(await page.locator('[data-cc="toggle"]').evaluate(el => el === document.activeElement), true);
             await page.keyboard.press('Enter');
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-            await page.addScriptTag({ content: axe });
+            await page.evaluate(axe);
             const audit = await page.evaluate(() => axe.run('.cc-root', { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] } }));
             assert.deepEqual(audit.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.failureSummary) })), [], 'automated accessibility checks');
             const save = page.locator('.cc-save');

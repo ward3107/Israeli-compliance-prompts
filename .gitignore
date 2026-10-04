@@ -16,3 +16,11 @@ generated/
 project-profile.json
 __pycache__/
 *.pyc
+
+# Local credentials and private exports
+.env.*
+!.env.example
+*.pem
+*.key
+web-compliance-project*.json
+legal-review-package*/

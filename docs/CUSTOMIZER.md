@@ -1,4 +1,8 @@
-# Client customizer
+# Advanced client customizer
+
+For a first visit, use [the no-install preview](https://ward3107.github.io/web-compliance-prompts/explore.html) and [guided installation](GUIDED-SETUP.md). The advanced ZIP contains private project details and all source files: upload only runtime assets. Both guided and advanced installation exports now use `region: auto` (opt-in); chosen business markets never establish visitor location.
+
+The browser runtime has no third-party libraries. The portable studio supports this builder without a server; its catalog is embedded at build time.
 
 Open [the builder](https://ward3107.github.io/web-compliance-prompts/builder.html) to theme the runnable cookie banner and export a project package. No account, backend or external assets are required. Project facts remain in browser memory until downloaded; the preview stores only its own consent choice in `cc_customizer_preview`.
 
