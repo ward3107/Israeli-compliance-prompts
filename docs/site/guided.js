@@ -7,14 +7,17 @@
   var answers = {yes:'כן',no:'לא',unknown:'לא יודע/ת'};
   var marketNames = {il:'ישראל',eu:'האיחוד האירופי','il+eu':'ישראל והאיחוד האירופי',uk:'בריטניה','us-ca':'קליפורניה',us:'ארה״ב — שכבה פדרלית בלבד',ca:'קנדה',unknown:'מדינות אחרות / לא ידוע'};
   var fields = ['site-url','business-name','contact-email','platform','market','output-language','privacy-url','accent','placement','background','foreground','radius','font'];
+  var stepNames=['פרטי האתר','צרכי העסק','מראה הבאנר','קבצים והתקנה'];
+  var guidance=[
+    ['רק הפרטים של העסק','כתובת האתר, שם העסק ואימייל לפניות פרטיות. לא צריך לתת לנו גישה לאתר או סיסמה.','חבילת באנר והוראות התקנה שמתאימות למערכת שבחרתם.'],
+    ['לא חייבים לדעת הכול','השאלות מתארות את הפעילות באתר. תשובה לא ידועה תיכנס לרשימת השאלות לבדיקה.','רשימת נושאים לבדיקה שמתאימה לתשובות שלכם.'],
+    ['בחרו, ואז נסו','העיצוב שבחרתם בהתנסות כבר כאן. אפשר להשאיר אותו או לשנות. לחצו גם על כפתורי הבאנר בתצוגה.','באנר בעיצוב ובשפה שלכם, עם אפשרות לשינוי העדפות.'],
+    ['ההורדה היא רק ההתחלה','שמרו את הקובץ ואז פעלו לפי הוראות ההתקנה. אם מישהו אחר מנהל את האתר, העבירו אליו את ההוראות.','קבצים והנחיות. התקנה, בדיקת כלי מעקב וביקורת משפטית עדיין נדרשות.']
+  ];
   function escape(value) { return String(value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function json(value) { return JSON.stringify(value,null,2); }
   function httpUrl(value) { try { var url = new URL(value); return ['https:','http:'].includes(url.protocol) && !url.username && !url.password; } catch(e) { return false; } }
-  function privacyUrl(value) {
-    if (!value) return true;
-    if (/[\\\s<>]/.test(value)) return false;
-    return /^\/(?!\/)/.test(value) || httpUrl(value);
-  }
+  function privacyUrl(value) {return !value || ToolkitInstall.validPolicy(value);}
   function project() {
     var values = {}; fields.forEach(function(id){values[id]=$(id).value.trim();});
     var response = {}; Object.keys(questions).forEach(function(key){response[key]=$('answer-'+key).value;});
@@ -37,7 +40,7 @@
   function preview() {if(studio)studio.syncLanguage();$('radius-value').textContent=$('radius').value;$('contrast').textContent=(contrast()>=4.5?'ניגודיות הטקסט תקינה: ':'בחרו צבעים מנוגדים יותר: ')+contrast().toFixed(2)+' / 4.5'; $('guided-preview').contentWindow.postMessage({type:'compliance-preview',config:config(),css:css(),name:$('business-name').value},location.protocol==='file:'?'*':location.origin); }
   function valid(current) {
     var controls=document.querySelector('[data-step="'+current+'"]').querySelectorAll('input,select');
-    for(var el of controls){ if(!el.checkValidity()){el.reportValidity();return false;} }
+    for(var el of controls){ if(!el.checkValidity()){$('form-error').textContent='בדקו את השדה ״'+(document.querySelector('label[for="'+el.id+'"]')?.textContent||el.id)+'״ לפני שממשיכים.';el.reportValidity();return false;} }
     if(current===0 && !httpUrl($('site-url').value.trim())) { $('form-error').textContent='הזינו כתובת אתר שמתחילה ב־https:// או http://, ללא פרטי כניסה.';$('site-url').focus();return false; }
     if(current===1 && !privacyUrl($('privacy-url').value.trim())) { $('form-error').textContent='הקישור למדיניות צריך להיות כתובת http/https או נתיב כמו /privacy.';$('privacy-url').focus();return false; }
     if(current===2 && contrast()<4.5){$('form-error').textContent='בחרו רקע וטקסט מנוגדים יותר לפני הכנת החבילה (לפחות 4.5).';return false;}
@@ -45,9 +48,12 @@
   }
   function show(next) {
     step=next;document.querySelectorAll('[data-step]').forEach(function(el){el.hidden=Number(el.dataset.step)!==step;});
-    document.querySelectorAll('.progress li').forEach(function(el,i){if(i===step)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
-    $('back').hidden=step===0;$('next').hidden=step===3;$('next').textContent=step===2?'הכנת החבילה':'ממשיכים';$('form-error').textContent='';
-    if(step===2)preview();if(step===3){summary();documentStudio.refresh();}$('step-'+step).focus();
+    document.querySelectorAll('.progress li').forEach(function(el,i){if(i===step)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');el.classList.toggle('complete',i<step);});
+    $('step-counter').textContent='שלב '+(step+1)+' מתוך 4 · '+stepNames[step];
+    $('help-title').textContent=guidance[step][0];$('help-text').textContent=guidance[step][1];$('help-result').textContent=guidance[step][2];
+    $('next-hint').textContent=['הבא: כמה שאלות על העסק','הבא: בחירת עיצוב וניסיון של הבאנר','הבא: סיכום, הורדה והוראות התקנה','אפשר לחזור ולעדכן לפני ההורדה'][step];
+    $('back').hidden=step===0;$('next').hidden=step===3;$('next').textContent=['המשך לצרכי העסק ←','המשך לבחירת עיצוב ←','לבדיקת החבילה ולהורדה ←',''][step];$('form-error').textContent='';
+    if(step===2)preview();if(step===3){summary();documentStudio.refresh();}$('step-'+step).focus({preventScroll:true});$('setup').scrollIntoView({block:'start'});
   }
   function openQuestions() {
     var list=[];Object.keys(questions).forEach(function(key){if($('answer-'+key).value==='unknown')list.push(questions[key]);});
@@ -74,6 +80,7 @@
     var blocked=!$('privacy-url').value.trim() || $('market').value==='unknown';
     $('download-install').disabled=blocked || !toolkit;
     $('installation-blocker').textContent=blocked?'אפשר כבר להוריד תיק לעורך דין. להורדת ההתקנה, חזרו לשאלון והשלימו את מדינות היעד ואת הקישור למדיניות הפרטיות.':'';
+    $('fix-details').hidden=!blocked;
     $('install-steps').replaceChildren();
     (wp?['ב־WordPress פתחו: תוספים ← תוסף חדש ← העלאת תוסף.','בחרו את קובץ ה־ZIP שהורדתם, התקינו והפעילו.','פתחו: הגדרות ← Web Compliance ופעלו לפי רשימת הבדיקות.']:['הורידו את החבילה ושלחו למי שמטפל באתר.','בקשו להתקין לפי START-HERE.html ולבדוק את כלי המעקב.']).forEach(function(text){var li=document.createElement('li');li.textContent=text;$('install-steps').append(li);});
   }
@@ -86,25 +93,15 @@
   function instructions(wp) {
     return page('התקנה ובדיקה באתר', '<p>עבור '+escape($('business-name').value)+' — '+escape($('site-url').value)+'</p>'+ (wp?'<ol><li>העלו את ZIP התוסף דרך תוספים ← תוסף חדש ← העלאת תוסף.</li><li>התקינו והפעילו. כנסו להגדרות ← Web Compliance.</li><li>להסרה, השביתו ומחקו את התוסף. הוא אינו יוצר דפי מדיניות.</li></ol>':'<ol><li>חלצו את החבילה. לפתיחת תצוגה מקומית, לחצו פעמיים על preview.html. העלו רק את cookie-consent.css, theme.css, cookie-consent.js ו-install.js לתיקיית /web-compliance/ באתר.</li><li>פתחו embed.html.txt והעתיקו את ארבע השורות להגדרות הקוד המותאם או למעטפת האתר. אין צורך בחבילות, CDN או פקודות CLI.</li><li>כפתור ההעדפות נוצר אוטומטית. אם שיניתם את מיקום הקבצים, עדכנו את הנתיבים בקטע ההטמעה. אין להעלות את קובצי הפרויקט או התיק המשפטי לתיקייה ציבורית.</li></ol>')+'<h2>רשימת בדיקות למתקין</h2><ul><li>בחלון פרטי, בדקו קבלה, דחייה, שינוי העדפות וטעינה חוזרת.</li><li>ודאו שקישור מדיניות הפרטיות קיים ומתאים לעסק.</li><li>בדקו מקלדת, נייד וכיוון הכתיבה.</li><li>חברו את כלי המעקב לאירוע compliance:consent ובדקו ברשת שהם חסומים לפני הסכמה ולאחר ביטולה. אין חסימה אוטומטית של קוד מתוספים אחרים.</li><li>הבאנר מתחיל ב־opt-in לכל המבקרים. בחירת מדינות בשאלון אינה זיהוי מיקום המבקר.</li></ul><h2>בדיקה משפטית</h2><p>פנו לעורך דין מתאים ובקשו בדיקת המסמכים וההתנהגות הרלוונטית באתר. אין כאן אישור משפטי.</p><a href="https://ward3107.github.io/web-compliance-prompts/legal-review.html">מידע על הכנת תיק לעורך דין</a>');
   }
-  function snippet() {
-    return '<link rel="stylesheet" href="/web-compliance/cookie-consent.css">\n<link rel="stylesheet" href="/web-compliance/theme.css">\n<script defer src="/web-compliance/cookie-consent.js"></script>\n<script defer src="/web-compliance/install.js"></script>';
-  }
-  function offlinePreview() {
-    return '<!doctype html><html lang="'+$('output-language').value+'" dir="'+(['he','ar'].includes($('output-language').value)?'rtl':'ltr')+'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cookie banner preview</title><link rel="stylesheet" href="cookie-consent.css"><link rel="stylesheet" href="theme.css"><body><h1>Cookie banner preview</h1><p>Local preview only. No trackers are loaded. The privacy link opens your configured policy.</p><script src="cookie-consent.js"></script><script src="install.js"></script></body></html>';
-  }
-  function installCode() {
-    var labels={he:'הגדרות עוגיות',ar:'إعدادات ملفات الارتباط',en:'Cookie preferences',ru:'Настройки файлов cookie'};
-    return '(function(){"use strict";if(window.__wctInstalled)return;window.__wctInstalled=true;CookieConsent.init(Object.assign('+json(config()).replace(/</g,'\\u003c')+', {onChange:function(consent){window.dispatchEvent(new CustomEvent("compliance:consent",{detail:consent}));}}));var button=document.getElementById("wct-preferences");if(!button){button=document.createElement("button");button.id="wct-preferences";button.type="button";button.className="wct-preferences";document.body.appendChild(button);}button.textContent='+JSON.stringify(labels[$('output-language').value])+';button.setAttribute("aria-label",button.textContent);button.addEventListener("click",function(){CookieConsent.show();});})();\n';
-  }
   function installation() {
     if(!toolkit || contrast()<4.5 || !$('privacy-url').value.trim() || $('market').value==='unknown')return;
     var wp=$('platform').value==='wordpress',prefix=wp?'web-compliance/':'',files={};
     ['cookie-consent.js','cookie-consent.css'].forEach(function(name){files[prefix+name]=toolkit.files['widgets/cookie-consent/'+name];});
-    files[prefix+'theme.css']=css();files[prefix+'install.js']=installCode();files[prefix+'LICENSE']=toolkit.files.LICENSE;
+    files[prefix+'theme.css']=css();files[prefix+'install.js']=ToolkitInstall.script(config());files[prefix+'LICENSE']=toolkit.files.LICENSE;
     if(wp)files[prefix+'web-compliance.php']=toolkit.files['integrations/wordpress/web-compliance.php'];
     files[prefix+'START-HERE.html']=instructions(wp);
-    files[prefix+'preview.html']=offlinePreview();
-    if(!wp)files['embed.html.txt']=snippet();
+    files[prefix+'preview.html']=ToolkitInstall.preview($('output-language').value);
+    if(!wp)files['embed.html.txt']=ToolkitInstall.snippet();
     save(ToolkitZip(files),wp?'web-compliance-wordpress.zip':'web-compliance-install.zip');$('download-status').textContent='הקובץ הוכן להורדה. התקנה ובדיקה באתר עדיין נדרשות.';
   }
   function reviewDownload() {
@@ -149,9 +146,10 @@
   var params=new URLSearchParams(location.search),selectedTheme=params.get('theme');
   if(selectedTheme && Object.hasOwn(themes,selectedTheme))document.querySelector('[data-theme="'+selectedTheme+'"]').click();
   if(['he','ar','en','ru'].includes(params.get('language')))$('output-language').value=params.get('language');
-  if(params.get('platform')==='other')$('platform').value='other';
+  if(['other','wordpress'].includes(params.get('platform')))$('platform').value=params.get('platform');
   $('preview-again').addEventListener('click',preview);
   $('download-install').addEventListener('click',installation);$('download-review').addEventListener('click',reviewDownload);
+  $('fix-details').addEventListener('click',function(){show(1);if(!$('privacy-url').value.trim())$('privacy-url').focus();else $('market').focus();});
   $('download-handoff').addEventListener('click',function(){save(new Blob([instructions($('platform').value==='wordpress')],{type:'text/html;charset=utf-8'}),'installation-handoff.html');});
   $('save-project').addEventListener('click',function(){save(new Blob([json(project())],{type:'application/json'}),'web-compliance-project.json');});$('resume-project').addEventListener('change',resume);
   window.addEventListener('message',function(event){if((location.protocol==='file:'?event.origin==='null'||event.origin==='file://':event.origin===location.origin) && event.source===$('guided-preview').contentWindow && event.data && event.data.type==='compliance-preview-ready')preview();});

@@ -34,6 +34,12 @@ def secure_html(text):
     return text.replace('<meta charset="utf-8">', '<meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="' + CSP + '"><meta name="referrer" content="no-referrer">', 1)
 
 
+def version_assets(text, version):
+    """A new page must not combine fresh markup with cached scripts/styles."""
+    return re.sub(r'(<(?:script|link|iframe)\b[^>]*?\b(?:src|href)=")([^"/?]+\.(?:js|css|html))(")',
+                  lambda match: match[1] + match[2] + '?v=' + version + match[3], text)
+
+
 def build(output):
     output = Path(output).resolve()
     # Never overwrite a source tree or an ancestor of the repository.
@@ -61,13 +67,14 @@ def build(output):
         for prefix, directory in [('examples/profiles/', 'profiles/'), ('docs/examples/', 'examples/')]:
             if name.startswith(prefix):
                 site_files[directory + Path(name).name] = text
-    expected_output = set(site_files) | {'.nojekyll', 'toolkit.json', 'web-compliance-studio.zip', 'SHA256SUMS.txt'}
+    expected_output = set(site_files) | {'.nojekyll', 'toolkit.json', 'web-compliance-studio.zip', 'web-compliance-mcp.zip', 'SHA256SUMS.txt'}
     if any(p.is_file() and p.relative_to(output).as_posix() not in expected_output for p in output.rglob('*')):
         raise ValueError('Unexpected existing output file; use an empty dedicated directory')
+    asset_version = hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()[:16]
     for name, text in site_files.items():
         destination = output / name
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(text, encoding='utf-8')
+        destination.write_text(version_assets(text, asset_version) if name.endswith('.html') else text, encoding='utf-8')
     (output / ".nojekyll").touch()
     packs, errors, _ = load_packs()
     if errors:
@@ -95,15 +102,27 @@ def build(output):
     offline['toolkit-loader.js'] = 'window.ToolkitSource={load:function(){return Promise.resolve(' + payload.replace('<', '\\u003c').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029') + ');}};\n'
     offline['START-HERE.html'] = offline['explore.html']
     offline['LICENSE'] = files['LICENSE']
-    archive = output / 'web-compliance-studio.zip'
-    with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as package:
-        for name, text in sorted(offline.items()):
-            info = zipfile.ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
-            info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o100644 << 16
-            package.writestr(info, text.encode('utf-8'))
-    checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
-    (output / 'SHA256SUMS.txt').write_text(checksum + '  ' + archive.name + '\n')
+    mcp_names = {'mcp/server.mjs', 'mcp/README.md', 'docs/site/install-kit.js',
+                 'docs/site/themes.js', 'widgets/cookie-consent/cookie-consent.js',
+                 'widgets/cookie-consent/cookie-consent.css',
+                 'integrations/wordpress/web-compliance.php', 'LICENSE'}
+    mcp_names.update(name for name in files if
+                     name.startswith('skills/web-compliance/templates/') or
+                     name.startswith('skills/web-compliance/jurisdictions/'))
+    mcp_files = {name: files[name] for name in sorted(mcp_names)}
+    mcp_files['START-HERE.md'] = files['mcp/README.md']
+    checksums = []
+    for archive_name, contents in [('web-compliance-studio.zip', offline),
+                                   ('web-compliance-mcp.zip', mcp_files)]:
+        archive = output / archive_name
+        with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as package:
+            for name, text in sorted(contents.items()):
+                info = zipfile.ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = 0o100644 << 16
+                package.writestr(info, text.encode('utf-8'))
+        checksums.append(hashlib.sha256(archive.read_bytes()).hexdigest() + '  ' + archive.name)
+    (output / 'SHA256SUMS.txt').write_text('\n'.join(checksums) + '\n')
     return output
 
 

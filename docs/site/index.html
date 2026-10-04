@@ -1,60 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Try the cookie consent banner and start with reusable website compliance project profiles. Drafts for review, with sourced jurisdiction packs.">
-  <title>Web Compliance Prompts — try it, check it, adapt it</title>
-  <link rel="stylesheet" href="site.css">
-  <link rel="stylesheet" href="cookie-consent.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="נסו באנר עוגיות, ראו את המסמכים והתאימו חבילה לאתר שלכם. שלב אחרי שלב, בטלפון ובמחשב. ללא חשבון או התקנה מראש.">
+<title>Web Compliance — קודם מנסים, אחר כך מתקינים</title>
+<link rel="stylesheet" href="site.css"><link rel="stylesheet" href="themes.css"><link rel="stylesheet" href="journey.css"><link rel="stylesheet" href="explore.css">
 </head>
-<body>
-  <a class="skip" href="#main">Skip to content</a>
-  <header class="masthead">
-    <a class="wordmark" href="./">Web Compliance Prompts</a>
-    <nav aria-label="Main"><a href="#examples">Examples</a><a href="https://github.com/ward3107/web-compliance-prompts/blob/main/README.he.md" lang="he" dir="rtl">מדריך בעברית</a><a href="https://github.com/ward3107/web-compliance-prompts">GitHub</a></nav>
-  </header>
-  <main id="main">
-    <section class="intro" aria-labelledby="title">
-      <div class="intro-copy">
-        <p class="edition">A practical toolkit for website builders</p>
-        <h1 id="title">See everything.<br>Install when ready.</h1>
-        <p class="lead">Cookie consent, privacy drafts and accessibility prompts, with sources you can check and project details you can reuse.</p>
-        <a class="button secondary" href="explore.html" lang="he" dir="rtl">תצוגה מלאה — בלי התקנה</a>
-        <p><a href="builder.html" lang="he" dir="rtl">כלי התאמה מתקדמים</a> · <a href="legal-review.html" lang="he" dir="rtl">בדיקה עם עורך דין</a></p>
-        <p class="scope">No CLI needed · Works offline · Self-hosted files</p>
-      </div>
-      <section class="workbench" aria-labelledby="demo-title">
-        <div class="workbench-heading"><span class="status-dot" aria-hidden="true"></span><h2 id="demo-title">Try the cookie banner</h2></div>
-        <p>Choose a market and language. Your choices stay in this browser; this demo loads no analytics or advertising tools.</p>
-        <div class="fields">
-          <label>Market<select id="region"><option value="eu">European Union / EEA</option><option value="il">Israel</option><option value="uk">United Kingdom</option><option value="us-ca">California</option><option value="us">United States — federal layer</option><option value="ca">Canada</option></select></label>
-          <label>Banner language<select id="language"><option value="en">English</option><option value="he">עברית</option><option value="ar">العربية</option><option value="ru">Русский</option></select></label>
-        </div>
-        <label class="check"><input type="checkbox" id="uk-exempt"> Enable eligible UK first-party analytics exemption</label>
-        <div class="demo-actions"><button class="button" id="try" type="button">Try the banner</button><button class="text-button" id="reset" type="button">Reset saved demo choice</button></div>
-        <div class="consent-state" role="status" aria-live="polite"><span>Current demo choice</span><p id="state">Choose “Try the banner” to begin.</p></div>
-        <p class="small">GPC is read from your browser. Region selection simulates a visitor location; the widget does not detect it.</p>
-      </section>
-    </section>
-    <aside class="review-note" aria-label="Review status"><strong>A starting point for review.</strong> These are draft templates, not legal advice or a compliance guarantee. Every jurisdiction pack is still awaiting qualified legal review.</aside>
-    <section class="start" aria-labelledby="start-title">
-      <h2 id="start-title">From project facts to a useful draft</h2>
-      <ol class="steps"><li><h3>Save a project profile</h3><p>Record the markets, language, business details and tools actually used on the site.</p></li><li><h3>Generate a prompt</h3><p>Get the filled template, selected source packs, known conflicts and a reproducible build manifest.</p></li><li><h3>Review and test</h3><p>Check legal applicability, then verify the implemented behavior, accessibility and actual tracking requests.</p></li></ol>
-    </section>
-    <section id="examples" aria-labelledby="examples-title">
-      <h2 id="examples-title">Three examples to start from</h2>
-      <p class="section-copy">Synthetic business details, ready to replace. Each example includes a reusable profile and a complete cookie-banner prompt.</p>
-      <div class="example-list">
-        <article><h3>Israeli business</h3><p>Hebrew output, RTL and the Israel pack.</p><div><a href="profiles/israel-he.json" download>Project profile</a><a href="examples/israel-he-cookie-banner.md">Filled prompt</a></div></article>
-        <article><h3>European shop</h3><p>English output and the EU / EEA pack.</p><div><a href="profiles/eu-shop-en.json" download>Project profile</a><a href="examples/eu-shop-en-cookie-banner.md">Filled prompt</a></div></article>
-        <article><h3>California site</h3><p>California with the inherited US federal layer.</p><div><a href="profiles/california-en.json" download>Project profile</a><a href="examples/california-en-cookie-banner.md">Filled prompt</a></div></article>
-      </div>
-    </section>
-    <section class="verification" aria-labelledby="verify-title"><h2 id="verify-title">Make the checks part of the work</h2><p>The repository tests consent logic, pack structure, draft generation and real browser interactions in Chromium, Firefox and WebKit. Network checks use synthetic trackers; your production tags need their own verification.</p><a href="https://github.com/ward3107/web-compliance-prompts/actions">See the automated checks</a></section>
-  </main>
-  <footer><span>Web Compliance Prompts · MIT license</span><a href="privacy.html">Demo privacy information</a></footer>
-  <script src="cookie-consent.js"></script>
-  <script src="site.js"></script>
-</body>
-</html>
+<body class="journey-page">
+<a class="skip" href="#main">דלגו לתוכן</a>
+<header class="masthead"><a class="wordmark" href="./" dir="ltr"><span class="brand-icon" aria-hidden="true">w.</span>Web Compliance</a><nav aria-label="ניווט"><a href="#install">איך זה עובד?</a><a href="#catalog" class="desktop-link">מה כלול?</a><a href="connect.html">חיבור לעוזר קוד</a></nav></header>
+<main id="main">
+<section class="explore-intro"><div><p class="edition">התנסות חופשית · בלי התקנה מראש</p><h1>מתנסים כאן.<br>מתקינים כשמוכנים.</h1><p class="lead">בחרו עיצוב, נסו את כפתורי הבאנר והכינו חבילה לאתר שלכם. הכול כאן, צעד־צעד.</p><a class="preview-jump" href="#banner-title">לנסות את הבאנר ↓</a><ul class="trust-line"><li>ללא חשבון</li><li>ללא תשלום</li><li>הפרטים נשארים בדפדפן</li></ul></div><aside class="intro-note"><strong>מה תקבלו בסוף?</strong><p>באנר בעיצוב שלכם, קובצי התקנה והוראות ברורות. אפשר להכין גם טיוטות מסמכים בעברית ותיק לבדיקה משפטית.</p></aside></section>
+<ol class="journey-map" aria-label="הדרך לאתר שלכם"><li aria-current="step"><span class="number">1</span>מנסים כאן</li><li><span class="number">2</span>מתאימים לאתר</li><li><span class="number">3</span>בודקים ומורידים</li><li><span class="number">4</span>מתקינים ובודקים</li></ol>
+<section class="preview-workspace" aria-labelledby="banner-title">
+<div class="workspace-heading section-heading"><div><h2 id="banner-title">נסו את הבאנר, כבר עכשיו</h2><p>בחרו עיצוב ושפה. בתצוגה שמתחת, לחצו על קבלה, דחייה או התאמה אישית.</p></div><span class="live-label">תצוגה פעילה</span></div>
+<div class="preview-controls"><div><label for="quick-theme">איזה עיצוב מתאים לכם?</label><select id="quick-theme"></select></div><div><label for="preview-language">באיזו שפה?</label><select id="preview-language"><option value="he">עברית</option><option value="ar">العربية</option><option value="en">English</option><option value="ru">Русский</option></select></div><div class="device-controls" role="group" aria-label="גודל התצוגה"><button id="wide" type="button" aria-pressed="true">מחשב</button><button id="narrow" type="button" aria-pressed="false">טלפון</button></div></div>
+<div class="preview-device"><iframe id="explore-preview" title="התנסות חיה בבאנר העוגיות" src="preview.html" sandbox="allow-scripts allow-same-origin"></iframe></div>
+<div class="preview-footer"><p id="try-status" role="status">זה אתר לדוגמה. אין בו כלי מעקב.</p><button class="text-button" id="reopen" type="button">פתיחת הבאנר מחדש</button></div>
+</section>
+<section class="explore-section" aria-labelledby="design-title"><details id="all-designs"><summary id="design-title">רוצים להשוות? ראו את כל 12 העיצובים<small>העיצוב והשפה שבחרתם יעברו איתכם לשלב ההתאמה.</small></summary><div id="explore-themes" class="theme-gallery" role="group" aria-label="בחירת עיצוב"></div></details></section>
+<section class="explore-section" aria-labelledby="documents-title"><span class="label-small">אפשר לראות הכול לפני שמורידים</span><h2 id="documents-title">ומה לגבי המסמכים?</h2><p>פתחו דוגמה כדי להבין מה תקבלו. אלה טיוטות בעברית לעסק בדיוני בישראל, שדורשות התאמה ובדיקה משפטית.</p><div id="document-examples"></div></section>
+<section id="install" class="explore-section" aria-labelledby="install-title"><span class="label-small">מה עושים אחרי ההתנסות?</span><h2 id="install-title">מכינים חבילה. מתקינים כשמוכנים.</h2><p>באשף נבקש פרטים על האתר, נעזור לבחור עיצוב ונציג מה להוריד ומה לעשות עם הקובץ. אפשר למלא גם בטלפון; את ההתקנה מנהלים דרך מערכת האתר שלכם.</p><div class="install-options"><article><span class="route-label">יש לי WordPress</span><h3>קובץ אחד להעלאה באתר</h3><ol><li>ממלאים את הפרטים ובודקים את הבאנר.</li><li>מורידים תוסף מותאם בקובץ ZIP.</li><li>מעלים דרך ״תוספים״ באתר, מפעילים ובודקים.</li></ol><a class="button secondary" id="wordpress-link" href="start.html">הכנת תוסף WordPress</a></article><article><span class="route-label">אתר אחר / אני לא בטוח</span><h3>הוראות למי שמטפל באתר</h3><ol><li>ממלאים את אותו אשף קצר.</li><li>מורידים קבצים והוראות התקנה.</li><li>מעבירים למפתח או מוסיפים דרך כלי הקוד של האתר.</li></ol><a class="button secondary" id="other-link" href="start.html?platform=other">הכנת חבילה לאתר אחר</a></article></div><aside class="review-note"><strong>מה ההתקנה עושה?</strong>מציגה באנר ושומרת את בחירת המבקר. צריך לחבר את כלי המעקב לבחירה הזאת ולבדוק את האתר. אין כאן סריקה אוטומטית, חסימה אוטומטית של תוספים אחרים או אישור משפטי.</aside></section>
+<section id="catalog" class="explore-section" aria-labelledby="catalog-title"><h2 id="catalog-title">כל התכולה, פתוחה לעיון</h2><p>13 תבניות מקור. הבאנר הוא רכיב מוכן; לשאר הנושאים יש הוראות לעבודה עם עוזר AI, ולשלושה מסמכים יש גם מחולל טיוטות.</p><p id="catalog-status" role="status">טוענים את התבניות…</p><div id="catalog-items"></div><noscript>להתנסות נדרש JavaScript. אפשר <a href="https://github.com/ward3107/web-compliance-prompts/tree/main/skills/web-compliance/templates">לקרוא את התבניות ב־GitHub</a> ללא התקנה.</noscript></section>
+<section class="explore-section" aria-label="אפשרויות נוספות"><h2>נוח לכם בדרך אחרת?</h2><div class="optional-routes"><div><h3>שימוש בלי אינטרנט</h3><p id="offline-status">במחשב: מורידים, מחלצים את כל הקבצים ופותחים START-HERE.html. בטלפון השתמשו באתר הזה.</p><a id="offline-download" href="web-compliance-studio.zip" download>הורדת הסטודיו למחשב</a></div><div><h3>עבודה עם עוזר קוד</h3><p>חיבור MCP מקומי ל־Claude Code, ל־VS Code ולכלים תואמים. העוזר יכול לקרוא תבניות ולהכין קובצי הטמעה.</p><a href="connect.html">איך מחברים את העוזר?</a></div><div><h3>כלים מתקדמים</h3><p>בחירת תבניות, קובצי פרופיל, מקורות וחבילות מותאמות למפתחים.</p><a href="builder.html">לכלי המתקדם</a></div></div></section>
+</main>
+<footer><span dir="ltr">Web Compliance · Open source · MIT</span><a href="privacy.html">פרטיות</a><a href="https://github.com/ward3107/web-compliance-prompts">קוד המקור</a></footer>
+<div class="next-bar" role="region" aria-label="השלב הבא"><p><strong>רוצים את זה באתר שלכם?</strong><small>העיצוב והשפה יישמרו במעבר לאשף.</small></p><a class="button" id="start-link" href="start.html">התאמה לאתר שלי <span aria-hidden="true">←</span></a></div>
+<script src="toolkit-loader.js"></script><script src="themes.js"></script><script src="documents-engine.js"></script><script src="explore.js"></script>
+</body></html>

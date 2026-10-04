@@ -2,6 +2,8 @@
 
 Want to preview and install without a terminal? [Explore the designs](https://ward3107.github.io/web-compliance-prompts/explore.html) → [download a configured package](https://ward3107.github.io/web-compliance-prompts/start.html). The generated universal installer needs only four local files and creates the preferences button automatically. WordPress is optional. This widget has **zero runtime dependencies**.
 
+Prefer working with a coding assistant? The optional [local MCP server](../../mcp/README.md) prepares the same canonical runtime files and shared installer as text, without writing to your site. It requires Node.js 22+; the installed browser widget still has no runtime dependencies. The [connection page](https://ward3107.github.io/web-compliance-prompts/connect.html) generates the editor configuration.
+
 Security: policy links are validated at the widget boundary, not merely HTML-escaped. Unsafe links are omitted. Generated packages default to `region: 'auto'`; explicit opt-out regions in the API below require verified visitor context and applicability. Integrate consent before trackers execute. Read [SECURITY.md](../../SECURITY.md) for deployment limits.
 
 A **drop-in, framework-agnostic cookie-consent banner** — vanilla JS + CSS, no
@@ -13,7 +15,7 @@ two files in.
 > This is a **template implementation**, not a compliance guarantee. Have a
 > qualified lawyer in each market review it, and confirm your region detection,
 > before relying on it. See the repo's
-> [Getting it legally reviewed](../../README.md#getting-it-legally-reviewed) section.
+> [legal-review guide](../../docs/GUIDED-SETUP.md#material-limits) section.
 
 ## What it does
 

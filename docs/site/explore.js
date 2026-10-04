@@ -9,16 +9,23 @@
     var css = '.cc-root{--cc-brand:'+colors[0]+';--cc-bg:'+colors[1]+';--cc-fg:'+colors[2]+';--cc-muted:'+colors[2]+';--cc-border:'+colors[2]+';--cc-radius:'+preset.radius+'px;font-family:'+ToolkitThemes.fonts[preset.font]+'}.cc-root .cc-btn-primary{color:'+(light?'#000':'#fff')+'}.cc-root a{color:'+colors[2]+'}';
     $('explore-preview').contentWindow.postMessage({type:'compliance-preview',config:{region:'auto',language:language,brandColor:colors[0]},css:css,name:'העסק לדוגמה'},location.protocol==='file:'?'*':location.origin);
     var params = new URLSearchParams({theme:theme,language:language});
-    $('start-link').href = $('wordpress-link').href = 'start.html?'+params;
+    $('start-link').href = 'start.html?'+params;
+    params.set('platform','wordpress');$('wordpress-link').href = 'start.html?'+params;
     params.set('platform','other');$('other-link').href = 'start.html?'+params;
   }
-  ToolkitThemes.gallery($('explore-themes'),'data-explore-theme',function(key){theme=key;preview();});
+  Object.keys(ToolkitThemes.presets).forEach(function(key){var option=document.createElement('option');option.value=key;option.textContent=ToolkitThemes.presets[key].name;$('quick-theme').append(option);});
+  ToolkitThemes.gallery($('explore-themes'),'data-explore-theme',function(key){theme=key;$('quick-theme').value=key;preview();});
+  $('quick-theme').addEventListener('change',function(){theme=this.value;document.querySelectorAll('[data-explore-theme]').forEach(function(el){el.setAttribute('aria-pressed',String(el.dataset.exploreTheme===theme));});preview();});
   $('preview-language').addEventListener('change',preview);$('reopen').addEventListener('click',preview);
   ['wide','narrow'].forEach(function(id){$(id).addEventListener('click',function(){
     $('explore-preview').classList.toggle('mobile',id==='narrow');
     ['wide','narrow'].forEach(function(key){$(key).setAttribute('aria-pressed',String(id===key));});
   });});
-  window.addEventListener('message',function(event){if((location.protocol==='file:'?event.origin==='null'||event.origin==='file://':event.origin===location.origin)&&event.source===$('explore-preview').contentWindow&&event.data&&event.data.type==='compliance-preview-ready')preview();});
+  window.addEventListener('message',function(event){
+    if(!(location.protocol==='file:'?event.origin==='null'||event.origin==='file://':event.origin===location.origin)||event.source!==$('explore-preview').contentWindow||!event.data)return;
+    if(event.data.type==='compliance-preview-ready')preview();
+    if(event.data.type==='compliance-preview-choice'&&typeof event.data.analytics==='boolean'&&typeof event.data.marketing==='boolean')$('try-status').textContent='כך הבחירה נשמרת: מדידה '+(event.data.analytics?'מותרת':'כבויה')+' · פרסום '+(event.data.marketing?'מותר':'כבוי')+'. כאן לא נטענים כלי מעקב.';
+  });
   function detail(container,title,note,source,rtl){
     var details=document.createElement('details'),summary=document.createElement('summary'),small=document.createElement('small'),pre=document.createElement('pre');
     summary.append(document.createTextNode(title));small.textContent=note;summary.append(small);pre.textContent=source;pre.dir=rtl?'rtl':'ltr';pre.tabIndex=0;pre.setAttribute('role','region');pre.setAttribute('aria-label',title);details.append(summary,pre);container.append(details);

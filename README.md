@@ -2,7 +2,7 @@
 
 **See it before installing. Use it without a terminal. Keep the files on your own site.**
 
-[Explore everything](https://ward3107.github.io/web-compliance-prompts/explore.html) · [Prepare your package](https://ward3107.github.io/web-compliance-prompts/start.html) · [Download the offline studio](https://ward3107.github.io/web-compliance-prompts/web-compliance-studio.zip) · [עברית](README.he.md)
+[Try it now](https://ward3107.github.io/web-compliance-prompts/) · [Prepare your package](https://ward3107.github.io/web-compliance-prompts/start.html) · [Download the offline studio](https://ward3107.github.io/web-compliance-prompts/web-compliance-studio.zip) · [Connect a coding assistant](https://ward3107.github.io/web-compliance-prompts/connect.html) · [עברית](README.he.md)
 
 A browser toolkit for website builders and their clients: a working cookie-consent banner, 12 design presets, three editable Hebrew document drafts, and 13 implementation prompt templates backed by six jurisdiction packs.
 
@@ -17,6 +17,8 @@ The **banner, browser studio and ZIP exporter have zero third-party runtime depe
 3. **Download:** choose WordPress or a universal website package. Legal drafts and the private review packet are separate downloads.
 4. **Install and verify:** follow the included instructions. Review consent behavior, policy links, accessibility and actual tracking requests on the destination site.
 
+The preview is also the homepage: one link opens a working banner. It has a compact design/language selector, a visible next step, optional detail sections and a mobile layout. The four-step wizard explains the current task, names the next action and provides a direct route back to missing details. “I do not know” is the default platform choice; WordPress is never silently assumed.
+
 The guided interface is currently Hebrew. Banner text supports **Hebrew, Arabic, English and Russian**, including RTL. Changing language does not expand legal coverage.
 
 ## Choose an installation route
@@ -29,7 +31,7 @@ The guided interface is currently Hebrew. Banner text supports **Hebrew, Arabic,
 | React, Next.js or another framework | Load the four browser files once in the client layout | A developer must connect tracking and handle the site's CSP/lifecycle |
 | A hosted website builder | Add the files/snippet through its supported custom-code feature | A plan/platform that permits custom code; no universal one-click integration is claimed |
 | Work offline | Download the studio ZIP, extract **all** files, double-click `START-HERE.html` | A current desktop browser; no local server, Python or Node |
-| Use an AI coding assistant | Read/copy a template or export filled prompts through the [advanced builder](https://ward3107.github.io/web-compliance-prompts/builder.html) | An assistant of your choice; installing a plugin is optional |
+| Use an AI coding assistant | Use the [MCP connection guide](https://ward3107.github.io/web-compliance-prompts/connect.html), or copy/export prompts | A compatible stdio MCP client and Node.js 22+ for MCP; no npm packages |
 
 The universal package contains `cookie-consent.js`, `cookie-consent.css`, `theme.css`, `install.js`, a local `preview.html`, `embed.html.txt`, the license and `START-HERE.html`. Upload **only the four runtime files** to `/web-compliance/` and paste:
 
@@ -67,7 +69,7 @@ To remove the universal integration, remove the snippet and its four files. For 
 | Production scanning, automatic tracker discovery/blocking, billing, monitoring, lawyer booking | **Not implemented** |
 | Legal approval or accessibility certification | **Not provided** |
 
-Generated installation packages start in **opt-in mode for every visitor**, including packages for US/California businesses. A target market is not a visitor's verified location. The standalone widget API retains explicit regional modes for developers who have verified applicability; the root demo can simulate those modes.
+Generated installation packages start in **opt-in mode for every visitor**, including packages for US/California businesses. A target market is not a visitor's verified location. The standalone widget API retains explicit regional modes for developers who have verified applicability; the [developer demo](https://ward3107.github.io/web-compliance-prompts/demo.html) can simulate those modes.
 
 ## All 13 templates
 
@@ -93,7 +95,7 @@ The six packs cover Israel (`il`), EU/EEA (`eu`), UK (`uk`), US federal (`us`), 
 
 ## Security and maintenance
 
-Read [SECURITY.md](SECURITY.md) for threat boundaries, reporting and deployment controls, and the [2.6.0 review](docs/verification/2.6.0.md) for test evidence and remaining limits.
+Read [SECURITY.md](SECURITY.md) for threat boundaries, reporting and deployment controls, and the [2.7.0 verification notes](docs/verification/2.7.0.md) for test evidence and remaining limits.
 
 Controls include URL-scheme validation at the widget boundary, escaped customer text, bounded project import, cross-platform ZIP path validation, an explicit public-file allowlist, a static Content Security Policy, read-only workflow defaults and commit-pinned GitHub Actions. The repository includes regression tests, dependency audits, CodeQL and Dependabot configuration. These measures do not constitute an independent penetration test or guarantee that vulnerabilities cannot exist.
 
@@ -103,12 +105,20 @@ GitHub Pages publication follows a successful **main-branch browser workflow** a
 
 End users do not need the tools below. Node dependencies are development-only (Playwright and axe). The Python builder/generator uses PyYAML and jsonschema and their locked transitive dependencies.
 
+### Optional MCP — local, portable, no npm install
+
+Open the [connection page](https://ward3107.github.io/web-compliance-prompts/connect.html): download/extract the MCP ZIP, select your editor, paste the absolute server-file path and copy the generated configuration. Four tools list templates, read a template, read a jurisdiction pack and prepare banner files as text. The server uses Node built-ins only, reads a fixed set of bundled files and has no network, shell or write operations. It runs independently of Claude, GitHub hosting or a marketplace; the client must support stdio MCP. Your AI provider may receive tool results and supplied facts.
+
+See [MCP setup, protocol support, security and removal](mcp/README.md). End users can keep using the browser studio without Node or an AI service.
+
 ### Claude Code plugin
 
 ```text
 /plugin marketplace add ward3107/web-compliance-prompts
 /plugin install web-compliance@web-compliance
 ```
+
+The plugin includes the local MCP server and requires Node.js 22+ for those tools. Do not add a duplicate standalone server. You can disable it in Claude Code.
 
 Or open any file in `skills/web-compliance/templates/`, fill its placeholders and use it with an assistant. See the [skill](skills/web-compliance/SKILL.md) for composition rules.
 
@@ -144,7 +154,7 @@ npm audit --audit-level=low
 
 See [WordPress QA instructions](docs/GUIDED-SETUP.md#verification) for the disposable integration test. Automated accessibility checks do not replace keyboard/screen-reader review, and synthetic tracker tests do not verify a customer's production tags.
 
-Build output is `generated/site/`; it includes the online studio, offline ZIP and checksum. Review additions to `scripts/public-files.json` when introducing public files. Unlisted local files and symlinks are excluded/rejected, so private files cannot silently enter the distribution through directory scanning.
+Build output is `generated/site/`; it includes the online studio, offline studio ZIP, separate MCP ZIP and checksums. Review additions to `scripts/public-files.json` when introducing public files. Unlisted local files and symlinks are excluded/rejected, so private files cannot silently enter the distribution through directory scanning.
 
 To update Python build dependencies, edit `requirements.in`, then run `python -m piptools compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in`. Install with `--require-hashes`, run `python scripts/check_dependencies.py --installed`, audit and test the change. `requirements.txt` is the generated, hash-locked file; do not edit it by hand. CI rejects stale direct pins, missing hashes and a mismatched installed environment. Do not update legal review dates just because a code check passed. The monthly freshness workflow flags packs older than 180 days for a source re-check.
 

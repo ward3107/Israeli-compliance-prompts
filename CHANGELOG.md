@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.7.0 — Guided experience and local MCP
+
+- The homepage now opens the working preview. Added a shared responsive design, compact theme/language controls, a persistent next step and progressive detail sections. Kept the regional developer demo at `demo.html`.
+- Simplified the four-step wizard with explicit next actions, contextual help, an unknown platform default and a direct way to fix incomplete installation details. Downloading and installing are explained separately.
+- Added an optional Node built-ins-only stdio MCP server with four read-only tools, a portable downloadable ZIP, Claude Code plugin integration and a browser configuration generator for compatible editors. No network, workspace writes or shell commands are exposed.
+- Hosted pages version their script, style and preview assets; catalog requests revalidate to prevent stale content after deployment. Offline paths remain self-contained.
+- Browser and MCP exports share the installer generator. Added protocol, malicious-input, packaged-server and configuration-download checks; both ZIPs have SHA-256 checksums.
+- Updated every README, setup guidance and security boundaries. Normal customer use remains browser-only with zero third-party runtime dependencies.
+
+
 ## Unreleased — dependency maintenance
 
 - Consolidated the nine initial dependency proposals, retaining immutable GitHub Action pins.

@@ -2,9 +2,9 @@
 
 ## Scope and supported version
 
-Security fixes target the latest `main` revision and current 2.6.x distributions. Update existing self-hosted assets after reviewing fixes; an offline copy does not update itself. Zero runtime dependencies reduces supply-chain exposure, but does not make custom code invulnerable.
+Security fixes target the latest `main` revision and current 2.7.x distributions. Update existing self-hosted assets after reviewing fixes; an offline copy does not update itself. Zero runtime dependencies reduces supply-chain exposure, but does not make custom code invulnerable.
 
-The trust boundaries are the public browser studio, user-supplied project files, exported ZIP/HTML/JavaScript, the standalone consent widget, the optional WordPress adapter, and the build/publication pipeline. No credential store, payment processing, user accounts or server-side business-data collection is implemented.
+The trust boundaries are the public browser studio, user-supplied project files, exported ZIP/HTML/JavaScript, the standalone consent widget, the optional local MCP server and WordPress adapter, and the build/publication pipeline. No credential store, payment processing, user accounts or server-side business-data collection is implemented.
 
 ## Reporting
 
@@ -14,7 +14,7 @@ Include the affected commit/version, a minimal reproduction with synthetic data,
 
 ## Controls implemented in this repository
 
-- Plain HTML/CSS/JavaScript for the studio, ZIP writer and widget; no CDN or runtime package installation. WordPress is an optional adapter. Python/Node packages are build/test tools only.
+- Plain HTML/CSS/JavaScript for the studio, ZIP writer and widget; no CDN or runtime package installation. WordPress is an optional adapter. Third-party Python/Node packages are build/test tools only. The optional MCP process requires a maintained Node.js 22+ runtime, uses built-ins only and has no npm runtime dependencies.
 - HTML escaping or DOM `textContent` for user-controlled content. Policy links are restricted to HTTP(S) or safe relative links at the widget sink; executable schemes, credentials, backslashes and control characters are rejected.
 - Imported project JSON has size, type, enum and field limits. Data is never evaluated as code. Preview messages validate sender window, origin, shape and stylesheet bounds. Local `file:` previews use a wildcard target origin only because file origins are opaque; receiver window identity and the browser's opaque file origin (`null` or `file://`) are checked.
 - Generated packages default to opt-in even for a US-targeting business. Saved consent is validated, region-scoped and bounded. GPC overrides marketing consent. This is not a defense against other malicious JavaScript already running on the customer's origin.
@@ -24,6 +24,12 @@ Include the affected commit/version, a minimal reproduction with synthetic data,
 - WordPress settings use the Settings API, its nonce protection and `manage_options`. There are no custom public write endpoints, uploaded executable templates or remote script downloads. The host WordPress/PHP installation and other plugins are outside this review.
 - GitHub workflows have scoped permissions, timeouts, commit-pinned actions and checkout credentials disabled. npm uses the lockfile and `--ignore-scripts`; Python build dependencies use a standard `requirements.in` → hash-locked `requirements.txt` pair. CI rejects drift between direct pins and the lock, missing hashes, and installed-version mismatches. CodeQL (JavaScript/Python) with a fail-closed SARIF severity gate on both pushes and PRs, dependency audits and Dependabot updates supplement regression tests.
 - Pages publishes only after the main-branch browser workflow succeeds, and checks out its exact tested SHA. Do not run untrusted PR code with production credentials. Publication additionally waits for the validation, dependency and CodeQL checks and refuses stale main commits. Make these required merge checks through repository settings too.
+
+## Local MCP boundary
+
+The server reads only fixed bundled files, resolves them inside the package root, and exposes four read-only tools. It cannot take arbitrary file paths, run commands, write to a workspace, listen on HTTP or call the network. Strict tool schemas and URL checks, 64 KiB input-line limits, 512 KiB output limits and sequential stdout backpressure bound its protocol surface. No tool inputs or secrets are logged. A shared pure installer module is used by browser exports and MCP output.
+
+The client still launches local code and may send results to its AI provider. Its own filesystem/network permissions are independent of our server. Review the package and configuration before trusting it, preserve existing client settings, and review proposed website edits. An offline server does not make an AI client offline. Protocol tests do not establish every client integration or constitute an independent security audit.
 
 ## Owner and hosting controls
 

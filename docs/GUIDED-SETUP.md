@@ -1,8 +1,16 @@
-# Preview-first guided setup
+# Step-by-step preview and guided setup
 
 Start with [the full preview](https://ward3107.github.io/web-compliance-prompts/explore.html): 12 working designs, three synthetic document examples and all 13 template sources before entering any personal/business data. The selected preset/language carry into the wizard; only allowlisted display preferences travel in the URL.
 
 The [portable studio ZIP](https://ward3107.github.io/web-compliance-prompts/web-compliance-studio.zip) works by extracting all files and opening `START-HERE.html` on a desktop browser. No Node, Python, local server, account or runtime library is required. External reference links still require internet access.
+
+## From a phone or computer
+
+The homepage opens the live preview directly. Choose a design/language, try the consent buttons and continue with “התאמה לאתר שלי”. Additional designs, sample documents and source templates remain available before any form or download. A fixed next-step bar keeps the main action available on long pages.
+
+The wizard shows four numbered stages: site details, business needs, banner appearance and files/installation. Each screen explains the current task and the next button names its destination. “Unknown” is the default site platform. The final screen separates downloading from installing, keeps legal documents distinct, and provides a direct correction button for missing policy/market details. It never claims that downloading installs anything. The sidebar gives stage-specific help; on phones it follows the main task. Saved-project import is under its own disclosure.
+
+For developers using an AI editor, the separate [MCP connection page](https://ward3107.github.io/web-compliance-prompts/connect.html) walks through ZIP extraction, local configuration generation and a starter request. See the [MCP guide](../mcp/README.md). It is optional and requires Node.js 22+ and a compatible client.
 
 ## Universal installation
 
@@ -17,7 +25,7 @@ The [guided flow](https://ward3107.github.io/web-compliance-prompts/start.html) 
 
 - Language-specific title, body and action-label editing with reset to original copy. Straight, rounded or pill buttons; three button sizes with at least 44px height; four text sizes. Overrides are escaped plain text and travel with downloads, saved projects and legal-review packets.
 - Twelve shared design presets, custom background/text/button colors, corner radius, font and placement. Text contrast is checked before installation export; saved projects from the original three-preset release still load.
-- An expandable toolkit overview distinguishes the installable banner from the other 12 prompts and implementation templates.
+- The public catalog distinguishes the installable banner from the other 12 prompts and implementation templates.
 - Editable Hebrew drafts for Israel-only projects: privacy, terms and (unless sales is explicitly no) refunds. Missing facts remain marked. Exports include HTML for printing/PDF and TXT plus an unreviewed manifest. Drafts join the lawyer packet, never the installable plugin. Changing facts blocks standalone document export until explicit regeneration; stale drafts in lawyer packets are marked. Unsupported markets omit documents from the lawyer packet, while saved projects retain the work.
 - Four steps: site details, business questions, banner design, installation and legal review.
 - Unknown answers remain unknown in the review packet. A missing privacy-policy URL or unknown target market prevents installation export, while still allowing a legal-review packet.
