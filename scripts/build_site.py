@@ -34,6 +34,12 @@ def secure_html(text):
     return text.replace('<meta charset="utf-8">', '<meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="' + CSP + '"><meta name="referrer" content="no-referrer">', 1)
 
 
+def version_assets(text, version):
+    """A new page must not combine fresh markup with cached scripts/styles."""
+    return re.sub(r'(<(?:script|link|iframe)\b[^>]*?\b(?:src|href)=")([^"/?]+\.(?:js|css|html))(")',
+                  lambda match: match[1] + match[2] + '?v=' + version + match[3], text)
+
+
 def build(output):
     output = Path(output).resolve()
     # Never overwrite a source tree or an ancestor of the repository.
@@ -64,10 +70,11 @@ def build(output):
     expected_output = set(site_files) | {'.nojekyll', 'toolkit.json', 'web-compliance-studio.zip', 'web-compliance-mcp.zip', 'SHA256SUMS.txt'}
     if any(p.is_file() and p.relative_to(output).as_posix() not in expected_output for p in output.rglob('*')):
         raise ValueError('Unexpected existing output file; use an empty dedicated directory')
+    asset_version = hashlib.sha256(json.dumps(site_files, sort_keys=True).encode()).hexdigest()[:16]
     for name, text in site_files.items():
         destination = output / name
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(text, encoding='utf-8')
+        destination.write_text(version_assets(text, asset_version) if name.endswith('.html') else text, encoding='utf-8')
     (output / ".nojekyll").touch()
     packs, errors, _ = load_packs()
     if errors:

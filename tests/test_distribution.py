@@ -27,6 +27,7 @@ class DistributionTests(unittest.TestCase):
                     self.assertIn('START-HERE.html', archive.namelist())
                     loader = archive.read('toolkit-loader.js').decode()
                     self.assertTrue(loader.startswith('window.ToolkitSource='))
+                    self.assertNotIn('explore.js?v=', archive.read('START-HERE.html').decode())
                     self.assertIsNone(archive.testzip())
                 self.assertIn(hashlib.sha256((output / 'web-compliance-studio.zip').read_bytes()).hexdigest(), (output / 'SHA256SUMS.txt').read_text())
                 with zipfile.ZipFile(output / 'web-compliance-mcp.zip') as archive:
@@ -39,6 +40,8 @@ class DistributionTests(unittest.TestCase):
                 for page in output.glob('*.html'):
                     self.assertIn("script-src 'self'", page.read_text())
                     self.assertIn("form-action 'none'", page.read_text())
+                self.assertRegex((output / 'index.html').read_text(), r'explore\.js\?v=[a-f0-9]{16}')
+                self.assertRegex((output / 'start.html').read_text(), r'install-kit\.js\?v=[a-f0-9]{16}')
         finally:
             private.unlink(missing_ok=True)
 
