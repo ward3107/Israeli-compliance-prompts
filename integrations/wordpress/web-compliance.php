@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Web Compliance — Cookie Banner
  * Description: A configured cookie banner with a persistent preferences button and a legal-review handoff. Existing tracking plugins require separate integration.
- * Version: 2.6.0
+ * Version: 2.7.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * License: MIT
@@ -19,7 +19,7 @@ add_action('admin_init', function () {
 add_action('wp_enqueue_scripts', function () {
     if (get_option('wct_banner_enabled', '1') !== '1') { return; }
     $url = plugin_dir_url(__FILE__);
-    $version = '2.6.0';
+    $version = '2.7.0';
     wp_enqueue_style('wct-consent', $url . 'cookie-consent.css', array(), $version);
     wp_enqueue_style('wct-theme', $url . 'theme.css', array('wct-consent'), $version);
     wp_enqueue_script('wct-consent', $url . 'cookie-consent.js', array(), $version, true);

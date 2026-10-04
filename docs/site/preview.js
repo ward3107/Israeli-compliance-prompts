@@ -10,7 +10,7 @@
     document.getElementById('sample-name').textContent = event.data.name || 'כאן מתחיל המותג שלכם.';
     document.getElementById('custom-style').textContent = event.data.css;
     // Preview storage never overwrites the site's real consent storage.
-    CookieConsent.init(Object.assign({}, config, { storageKey: 'cc_customizer_preview', autoFocus: false, privacyPolicyUrl: 'privacy.html' }));
+    CookieConsent.init(Object.assign({}, config, { storageKey: 'cc_customizer_preview', autoFocus: false, privacyPolicyUrl: 'privacy.html', onChange:function(consent){parent.postMessage({type:'compliance-preview-choice',analytics:!!consent.analytics,marketing:!!consent.marketing},location.protocol==='file:'?'*':location.origin);} }));
     CookieConsent.show();
   });
   parent.postMessage({ type: 'compliance-preview-ready' }, location.protocol==='file:'?'*':location.origin);

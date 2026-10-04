@@ -12,7 +12,7 @@ const assets = {
   '/': ['tests/browser-fixture.html', 'text/html'],
   '/cookie-consent.js': ['widgets/cookie-consent/cookie-consent.js', 'text/javascript'],
   '/cookie-consent.css': ['widgets/cookie-consent/cookie-consent.css', 'text/css'],
-  '/site/': ['docs/site/index.html', 'text/html'],
+  '/site/': ['docs/site/demo.html', 'text/html'],
   '/site/site.css': ['docs/site/site.css', 'text/css'],
   '/site/site.js': ['docs/site/site.js', 'text/javascript'],
   '/site/privacy.html': ['docs/site/privacy.html', 'text/html'],

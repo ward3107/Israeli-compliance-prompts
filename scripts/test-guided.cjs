@@ -21,9 +21,9 @@ async function main(){
    const page=await browser.newPage({viewport:{width:1320,height:900}}),errors=[],unexpected=[];
    page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base)&&!r.url().startsWith('blob:'))unexpected.push(r.url());});
    await page.goto(base+'/start.html');await page.waitForFunction(()=>!document.getElementById('next').disabled);
-   assert.equal(await page.locator('#back').isVisible(),false);
+   assert.equal(await page.locator('#back').isVisible(),false);assert.equal(await page.locator('#platform').inputValue(),'unknown');
    await page.locator('#next').click();assert.equal(await page.locator('[data-step="0"]').isVisible(),true);
-   await page.locator('#site-url').fill('https://example.com');await page.locator('#business-name').fill('Example <script>alert(1)</script>');await page.locator('#contact-email').fill('private-contact@example.com');
+   await page.locator('#platform').selectOption('wordpress');await page.locator('#site-url').fill('https://example.com');await page.locator('#business-name').fill('Example <script>alert(1)</script>');await page.locator('#contact-email').fill('private-contact@example.com');
    await page.locator('#next').click();assert.equal(await page.locator('#answer-tracking').inputValue(),'unknown');
    await page.locator('#privacy-url').fill('javascript:alert(1)');await page.locator('#next').click();assert.equal(await page.locator('[data-step="1"]').isVisible(),true);
    await page.locator('#privacy-url').fill('');await page.locator('#next').click();
@@ -49,6 +49,7 @@ async function main(){
    await page.locator('#next').click();assert.equal(await page.locator('#download-install').isEnabled(),false);
    assert.equal(await page.locator('#next').isVisible(),false);
    assert.match(await page.locator('#summary').innerText(),/6 שאלות/);
+   await page.locator('#fix-details').click();assert.equal(await page.locator('[data-step="1"]').isVisible(),true);assert.equal(await page.locator('#privacy-url').evaluate(el=>el===document.activeElement),true);await page.locator('#next').click();await page.locator('#next').click();
    const legal=await download(page,'download-review','guided-'+name+'-legal.zip');
    execFileSync('python',['-c','import sys,zipfile,json;z=zipfile.ZipFile(sys.argv[1]);assert z.testzip() is None;p=json.loads(z.read("project.json"));assert p["answers"]["tracking"]=="unknown";s=z.read("review-summary.html").decode();assert "<script>alert(1)</script>" not in s;assert "&lt;script&gt;" in s;assert "sources/il.json" in z.namelist();assert "No lawyer" in z.read("STATUS.txt").decode()',legal]);
    const saved=await download(page,'save-project','guided-'+name+'-project.json');
@@ -60,7 +61,7 @@ async function main(){
    const plugin=await download(page,'download-install','guided-'+name+'-wordpress.zip');
    execFileSync('python',['-c','import sys,zipfile;z=zipfile.ZipFile(sys.argv[1]);assert z.testzip() is None;assert "web-compliance/web-compliance.php" in z.namelist();assert b"Plugin Name:" in z.read("web-compliance/web-compliance.php");assert not any("project.json" in n or "review-summary" in n for n in z.namelist());assert all(b"private-contact@example.com" not in z.read(n) for n in z.namelist());assert b"compliance:consent" in z.read("web-compliance/install.js")',plugin]);
    await page.screenshot({path:path.join(out,'guided-'+name+'-delivery.png'),fullPage:true});
-   await page.reload();await page.waitForFunction(()=>!document.getElementById('next').disabled);await page.locator('#resume-project').setInputFiles(saved);
+   await page.reload();await page.waitForFunction(()=>!document.getElementById('next').disabled);await page.locator('#resume-details summary').click();await page.locator('#resume-project').setInputFiles(saved);
    await page.getByText('הפרויקט נטען. אפשר לבדוק ולעדכן את הפרטים.').waitFor();assert.equal(await page.locator('#business-name').inputValue(),'Example <script>alert(1)</script>');assert.equal(await page.locator('#background').inputValue(),'#152435');
    await page.locator('#next').click();await page.locator('#market').selectOption('unknown');await page.locator('#next').click();await page.locator('#next').click();assert.equal(await page.locator('#download-install').isEnabled(),false);
    await page.locator('#resume-project').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from('{"format":"web-compliance-project","version":1,"theme":"__proto__"}')});

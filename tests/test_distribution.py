@@ -29,6 +29,13 @@ class DistributionTests(unittest.TestCase):
                     self.assertTrue(loader.startswith('window.ToolkitSource='))
                     self.assertIsNone(archive.testzip())
                 self.assertIn(hashlib.sha256((output / 'web-compliance-studio.zip').read_bytes()).hexdigest(), (output / 'SHA256SUMS.txt').read_text())
+                with zipfile.ZipFile(output / 'web-compliance-mcp.zip') as archive:
+                    self.assertIn('mcp/server.mjs', archive.namelist())
+                    self.assertIn('docs/site/install-kit.js', archive.namelist())
+                    self.assertNotIn(private.name, archive.namelist())
+                    self.assertFalse(any('node_modules' in name for name in archive.namelist()))
+                    self.assertIsNone(archive.testzip())
+                self.assertIn(hashlib.sha256((output / 'web-compliance-mcp.zip').read_bytes()).hexdigest(), (output / 'SHA256SUMS.txt').read_text())
                 for page in output.glob('*.html'):
                     self.assertIn("script-src 'self'", page.read_text())
                     self.assertIn("form-action 'none'", page.read_text())

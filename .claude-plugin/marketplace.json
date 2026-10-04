@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Jurisdiction-aware AI coding prompts for website legal compliance.",
-    "version": "2.6.0"
+    "version": "2.7.0"
   },
   "plugins": [
     {
       "name": "web-compliance",
       "source": "./",
       "description": "13 draft compliance templates, 6 sourced jurisdiction packs, reusable project profiles and tested cookie consent code. Hebrew/Arabic/English/Russian. Legal review remains pending.",
-      "version": "2.6.0",
+      "version": "2.7.0",
       "category": "legal",
       "keywords": [
         "compliance",

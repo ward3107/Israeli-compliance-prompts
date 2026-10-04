@@ -29,5 +29,6 @@
       container.append(button);
     });
   }
-  window.ToolkitThemes={presets:presets,gallery:gallery,fonts:{inherit:'inherit',system:'system-ui, Tahoma, Arial, sans-serif',serif:'Georgia, serif'}};
+  var api={presets:presets,gallery:gallery,fonts:{inherit:'inherit',system:'system-ui, Tahoma, Arial, sans-serif',serif:'Georgia, serif'}};
+  if(typeof module==='object'&&module.exports)module.exports=api;else window.ToolkitThemes=api;
 })();

@@ -17,6 +17,8 @@ const server=http.createServer((req,res)=>{
 async function main(){
   fs.mkdirSync(out,{recursive:true});
   execFileSync('python',['-c','import zipfile,sys;zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])',path.join(site,'web-compliance-studio.zip'),path.join(out,'studio')]);
+  execFileSync('python',['-c','import zipfile,sys;z=zipfile.ZipFile(sys.argv[1]);assert z.testzip() is None;z.extractall(sys.argv[2])',path.join(site,'web-compliance-mcp.zip'),path.join(out,'mcp')]);
+  execFileSync(process.execPath,['--test','tests/mcp.test.cjs'],{env:{...process.env,WCT_MCP_SERVER:path.join(out,'mcp/mcp/server.mjs')},stdio:'inherit'});
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base='http://127.0.0.1:'+server.address().port;
   try{for(const [name,engine] of Object.entries({chromium,firefox,webkit}).filter(([name])=>!process.env.WCT_BROWSERS||process.env.WCT_BROWSERS.split(",").includes(name))){
     const browser=await engine.launch();try{for(const offline of [false,true]){
@@ -25,12 +27,16 @@ async function main(){
       page.on('pageerror',e=>errors.push(e.message));
       page.on('request',r=>{if(/^https?:/.test(r.url())&&(offline||!r.url().startsWith(base)))remote.push(r.url());});
       if(offline)await context.route(/^https?:/,route=>route.abort());
-      await page.goto(offline?pathToFileURL(path.join(out,'studio/START-HERE.html')).href:base+'/explore.html');
+      await page.goto(offline?pathToFileURL(path.join(out,'studio/START-HERE.html')).href:base+'/');
       await page.waitForFunction(()=>document.querySelectorAll('#catalog-items details').length===13);
-      assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(242, 247, 250)');
+      assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(248, 250, 249)');
       assert.equal(await page.locator('#document-examples details').count(),3);
       assert.equal(await page.locator('input').count(),0,'Discovery must not require business details');
-      await page.locator('[data-explore-theme=forest]').click();await page.locator('#preview-language').selectOption('en');
+      await page.screenshot({path:path.join(out,`${name}-${offline?'offline':'online'}-desktop.png`),fullPage:false});
+      for(const width of [320,390,768]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));}
+      await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(out,`${name}-${offline?'offline':'online'}-phone.png`),fullPage:false});
+      await page.setViewportSize({width:1280,height:900});
+      await page.locator('#all-designs summary').click();await page.locator('[data-explore-theme=forest]').click();await page.locator('#preview-language').selectOption('en');
       const frame=page.frameLocator('#explore-preview');await frame.getByRole('button',{name:'Reject all',exact:true}).waitFor();
       await frame.getByRole('button',{name:'Reject all',exact:true}).click();await page.locator('#reopen').click();
       await frame.getByRole('button',{name:'Customize',exact:true}).waitFor();
@@ -55,6 +61,21 @@ async function main(){
       await page.goto(pathToFileURL(path.join(extracted,'preview.html')).href);
       await page.getByRole('button',{name:'Reject all',exact:true}).click();await page.locator('#wct-preferences').click();
       await page.getByRole('button',{name:'Reject all',exact:true}).waitFor();
+      // The optional editor connection is a complete no-shell configuration flow.
+      await page.goto(offline?pathToFileURL(path.join(out,'studio/connect.html')).href:base+'/connect.html');
+      await page.locator('#mcp-path').fill('C:\\Tools\\Project with spaces\\mcp\\server.mjs');
+      await page.locator('#connection-form button').click();
+      let config=JSON.parse(await page.locator('#config-output').textContent());
+      assert.equal(config.mcpServers['web-compliance'].args[0],'C:\\Tools\\Project with spaces\\mcp\\server.mjs');
+      await page.locator('#mcp-client').selectOption('vscode-legacy');
+      assert.equal(await page.locator('#config-result').isVisible(),false,'Changed inputs invalidate stale configurations');
+      await page.locator('#connection-form button').click();config=JSON.parse(await page.locator('#config-output').textContent());assert.equal(config.servers['web-compliance'].command,'node');
+      const configWaiting=page.waitForEvent('download');await page.locator('#download-config').click();const configDownload=await configWaiting;
+      const configPath=path.join(out,`${name}-${offline?'offline':'online'}-mcp.json`);await configDownload.saveAs(configPath);assert.deepEqual(JSON.parse(fs.readFileSync(configPath,'utf8')),config);
+      await page.locator('#mcp-path').fill('relative/mcp/server.mjs');await page.locator('#connection-form button').click();assert.equal(await page.locator('#config-result').isVisible(),false);
+      await page.locator('#mcp-path').fill('/Users/example/toolkit/mcp/server.mjs');await page.locator('#connection-form button').click();
+      await page.evaluate(axe);const connectionAudit=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}));assert.deepEqual(connectionAudit.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[]);
+      await page.setViewportSize({width:320,height:740});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       assert.deepEqual(errors,[]);assert.deepEqual(remote,[]);await context.close();
       console.log(`${name} ${offline?'offline':'online'}: complete catalog, preview, design transfer, CSP, a11y, mobile and universal package passed`);
     }}finally{await browser.close();}
