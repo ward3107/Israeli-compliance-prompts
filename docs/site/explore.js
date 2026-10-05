@@ -1,6 +1,7 @@
 (function () {
   'use strict';
   var $ = function (id) { return document.getElementById(id); }, theme = 'ocean';
+  var languageNames = {he:'עברית',ar:'ערבית',en:'אנגלית',ru:'רוסית'};
   var names = {'cookie-banner':'באנר עוגיות','privacy-policy':'מדיניות פרטיות','terms-of-use':'תנאי שימוש','refund-policy':'ביטולים והחזרים','accessibility-baseline':'בסיס נגישות לאתר','accessibility-widget':'הגדרות נגישות','accessibility-statement':'הצהרת נגישות','client-onboarding':'שאלון קליטת לקוח','data-subject-rights':'זכויות בנושא מידע אישי','disclaimer':'הבהרות ואחריות','ecommerce-checkout':'תהליך רכישה','email-marketing':'דיוור שיווקי','freelancer-contract':'חוזה פרילנס'};
   function preview() {
     var preset = ToolkitThemes.presets[theme], language = $('preview-language').value;
@@ -15,8 +16,10 @@
   }
   Object.keys(ToolkitThemes.presets).forEach(function(key){var option=document.createElement('option');option.value=key;option.textContent=ToolkitThemes.presets[key].name;$('quick-theme').append(option);});
   ToolkitThemes.gallery($('explore-themes'),'data-explore-theme',function(key){theme=key;$('quick-theme').value=key;preview();});
-  $('quick-theme').addEventListener('change',function(){theme=this.value;document.querySelectorAll('[data-explore-theme]').forEach(function(el){el.setAttribute('aria-pressed',String(el.dataset.exploreTheme===theme));});preview();});
-  $('preview-language').addEventListener('change',preview);$('reopen').addEventListener('click',preview);
+  function describeChange(message) { $('change-description').textContent=message; }
+  $('explore-themes').addEventListener('click',function(event){var button=event.target.closest('[data-explore-theme]');if(button)describeChange('הבאנר עבר לעיצוב '+ToolkitThemes.presets[button.dataset.exploreTheme].name+'. הצבעים, הפינות והגופן עודכנו בתצוגה.');});
+  $('quick-theme').addEventListener('change',function(){theme=this.value;document.querySelectorAll('[data-explore-theme]').forEach(function(el){el.setAttribute('aria-pressed',String(el.dataset.exploreTheme===theme));});describeChange('הבאנר עבר לעיצוב '+ToolkitThemes.presets[theme].name+'. הצבעים, הפינות והגופן עודכנו בתצוגה.');preview();});
+  $('preview-language').addEventListener('change',function(){describeChange('נוסח הבאנר בתצוגה השתנה ל'+languageNames[this.value]+'.');preview();});$('reopen').addEventListener('click',preview);
   ['wide','narrow'].forEach(function(id){$(id).addEventListener('click',function(){
     $('explore-preview').classList.toggle('mobile',id==='narrow');
     ['wide','narrow'].forEach(function(key){$(key).setAttribute('aria-pressed',String(id===key));});
