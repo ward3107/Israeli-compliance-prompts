@@ -29,7 +29,7 @@ async function main(){
       if(offline)await context.route(/^https?:/,route=>route.abort());
       await page.goto(offline?pathToFileURL(path.join(out,'studio/START-HERE.html')).href:base+'/');
       await page.waitForFunction(()=>document.querySelectorAll('#catalog-items details').length===13);
-      assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(248, 250, 249)');
+      assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(244, 248, 246)');
       assert.equal(await page.locator('#document-examples details').count(),3);
       assert.equal(await page.locator('input').count(),0,'Discovery must not require business details');
       await page.screenshot({path:path.join(out,`${name}-${offline?'offline':'online'}-desktop.png`),fullPage:false});
@@ -37,6 +37,7 @@ async function main(){
       await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(out,`${name}-${offline?'offline':'online'}-phone.png`),fullPage:false});
       await page.setViewportSize({width:1280,height:900});
       await page.locator('#all-designs summary').click();await page.locator('[data-explore-theme=forest]').click();await page.locator('#preview-language').selectOption('en');
+      assert.match(await page.locator('#change-description').textContent(),/אנגלית/);
       const frame=page.frameLocator('#explore-preview');await frame.getByRole('button',{name:'Reject all',exact:true}).waitFor();
       await frame.getByRole('button',{name:'Reject all',exact:true}).click();await page.locator('#reopen').click();
       await frame.getByRole('button',{name:'Customize',exact:true}).waitFor();
@@ -53,7 +54,11 @@ async function main(){
       await page.locator('#other-link').click();await page.waitForFunction(()=>!document.getElementById('next').disabled);
       assert.equal(await page.locator('#platform').inputValue(),'other');assert.equal(await page.locator('#accent').inputValue(),'#216348');assert.equal(await page.locator('#output-language').inputValue(),'en');
       await page.locator('#site-url').fill('https://example.com');await page.locator('#business-name').fill('Portable example');await page.locator('#contact-email').fill('private@example.com');await page.locator('#next').click();
-      await page.locator('#market').selectOption('us-ca');await page.locator('#privacy-url').fill('/privacy');await page.locator('#next').click();await page.locator('#next').click();
+      await page.locator('#market').selectOption('us-ca');await page.locator('#privacy-url').fill('/privacy');await page.locator('#next').click();
+      await page.locator('#guided-narrow').click();assert.equal(await page.locator('#guided-preview').getAttribute('class'),'mobile');
+      await page.locator('[data-theme=night]').click();assert.match(await page.locator('#guided-change').textContent(),/הבאנר עבר לעיצוב/);
+      await page.setViewportSize({width:390,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.setViewportSize({width:1280,height:900});
+      await page.locator('#next').click();
       const waiting=page.waitForEvent('download');await page.locator('#download-install').click();const download=await waiting;
       const dest=path.join(out,`${name}-${offline?'offline':'online'}.zip`);await download.saveAs(dest);
       const extracted=dest+'.files';
